@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>지석 | Backend Developer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F7F8FC;
+      --surface: #FFFFFF;
+      --surface2: #F0F2F8;
+      --border: #E4E8F0;
+      --text-primary: #0F1623;
+      --text-secondary: #4B5778;
+      --text-muted: #8C96B0;
+      --accent: #2563EB;
+      --accent-light: #EFF4FF;
+      --accent-mid: #93B4FD;
+      --violet: #7C3AED;
+      --violet-light: #F3EEFF;
+      --green: #059669;
+      --green-light: #ECFDF5;
+      --orange: #D97706;
+      --orange-light: #FFFBEB;
+      --red: #DC2626;
+      --red-light: #FEF2F2;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(247,248,252,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: 1100px; margin: 0 auto;
+      padding: 0 2rem;
+      height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo {
+      font-family: 'Sora', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+
+    /* ─── HERO ─── */
+    .hero {
+      min-height: 100vh;
+      display: flex; align-items: center;
+      padding: 100px 2rem 60px;
+      max-width: 1100px; margin: 0 auto;
+    }
+    .hero-content { max-width: 640px; }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--accent-light);
+      border: 1px solid var(--accent-mid);
+      color: var(--accent);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      padding: 4px 12px;
+      border-radius: 100px;
+      margin-bottom: 1.5rem;
+      animation: fadeUp 0.6s ease both;
+    }
+    .hero-badge::before { content: '●'; font-size: 0.5rem; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    .hero h1 {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.04em;
+      margin-bottom: 0.5rem;
+      animation: fadeUp 0.6s 0.1s ease both;
+    }
+    .hero h1 .name-accent { color: var(--accent); }
+    .hero-sub {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+      font-weight: 400;
+      color: var(--text-secondary);
+      margin-bottom: 1.5rem;
+      animation: fadeUp 0.6s 0.2s ease both;
+    }
+    .hero-desc {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin-bottom: 2.5rem;
+      animation: fadeUp 0.6s 0.3s ease both;
+    }
+    .hero-actions {
+      display: flex; gap: 1rem; flex-wrap: wrap;
+      animation: fadeUp 0.6s 0.4s ease both;
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--accent);
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+      box-shadow: 0 2px 12px rgba(37,99,235,0.25);
+    }
+    .btn-primary:hover { background: #1D4ED8; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(37,99,235,0.35); }
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--surface);
+      color: var(--text-primary);
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      transition: all 0.2s;
+    }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
+
+    .hero-visual {
+      flex: 1; display: flex; justify-content: flex-end; align-items: center;
+      animation: fadeUp 0.6s 0.3s ease both;
+    }
+    .hero-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      width: 280px;
+      box-shadow: 0 8px 40px rgba(15,22,35,0.06);
+    }
+    .hero-card-header {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .avatar {
+      width: 44px; height: 44px;
+      background: linear-gradient(135deg, var(--accent), var(--violet));
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff;
+      font-family: 'Sora', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+    .hero-card-name { font-weight: 700; font-size: 0.95rem; }
+    .hero-card-role { font-size: 0.78rem; color: var(--text-muted); }
+    .stat-row { display: flex; justify-content: space-between; margin-bottom: 10px; }
+    .stat-item { text-align: center; }
+    .stat-num { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 1.2rem; color: var(--accent); }
+    .stat-label { font-size: 0.7rem; color: var(--text-muted); }
+    .mini-stack { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 14px; }
+    .mini-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: var(--surface2);
+      color: var(--text-secondary);
+    }
+
+    /* ─── SECTION COMMONS ─── */
+    section { padding: 80px 2rem; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    .section-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 0.75rem;
+    }
+    .section-title {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--text-primary);
+      margin-bottom: 0.75rem;
+    }
+    .section-desc {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      max-width: 540px;
+      line-height: 1.8;
+      margin-bottom: 3rem;
+    }
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ─── SKILLS ─── */
+    #skills { background: var(--surface); }
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    .skill-category {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+    }
+    .skill-category h3 {
+      font-family: 'Sora', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 16px;
+    }
+    .skill-list { display: flex; flex-direction: column; gap: 10px; }
+    .skill-item { display: flex; align-items: center; justify-content: space-between; }
+    .skill-name { font-size: 0.88rem; font-weight: 500; color: var(--text-primary); }
+    .skill-bar-wrap { width: 120px; height: 6px; background: var(--border); border-radius: 4px; overflow: hidden; }
+    .skill-bar { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--accent), var(--violet)); width: 0; transition: width 1s cubic-bezier(0.4,0,0.2,1); }
+
+    .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2rem; }
+    .tag {
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 6px 14px;
+      border-radius: 6px;
+      border: 1px solid;
+    }
+    .tag-blue { background: var(--accent-light); color: var(--accent); border-color: var(--accent-mid); }
+    .tag-violet { background: var(--violet-light); color: var(--violet); border-color: #C4B5FD; }
+    .tag-green { background: var(--green-light); color: var(--green); border-color: #6EE7B7; }
+    .tag-orange { background: var(--orange-light); color: var(--orange); border-color: #FCD34D; }
+    .tag-red { background: var(--red-light); color: var(--red); border-color: #FCA5A5; }
+
+    /* ─── PROJECTS ─── */
+    #projects { background: var(--bg); }
+    .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(480px, 1fr)); gap: 1.5rem; }
+    @media(max-width: 520px) { .projects-grid { grid-template-columns: 1fr; } }
+
+    .project-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      transition: all 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+    .project-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--violet));
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.3s ease;
+    }
+    .project-card:hover { box-shadow: 0 8px 40px rgba(15,22,35,0.1); transform: translateY(-3px); }
+    .project-card:hover::before { transform: scaleX(1); }
+
+    .project-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; }
+    .project-icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+    }
+    .project-icon.blue { background: var(--accent-light); }
+    .project-icon.violet { background: var(--violet-light); }
+    .project-status {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      padding: 4px 10px;
+      border-radius: 100px;
+      background: var(--green-light);
+      color: var(--green);
+    }
+    .project-card h3 {
+      font-family: 'Sora', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+    .project-en {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+    .project-desc { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 20px; }
+    .project-features { margin-bottom: 20px; padding: 16px; background: var(--bg); border-radius: 8px; }
+    .project-features li {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      padding-left: 1.2em;
+      position: relative;
+      list-style: none;
+    }
+    .project-features li::before { content: '→'; position: absolute; left: 0; color: var(--accent); font-size: 0.75rem; }
+    .project-tech { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+    .tech-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      padding: 4px 10px;
+      background: var(--surface2);
+      color: var(--text-secondary);
+      border-radius: 4px;
+      border: 1px solid var(--border);
+    }
+    .project-links { display: flex; gap: 10px; }
+    .link-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.82rem; font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .link-btn-primary { background: var(--accent); color: #fff; }
+    .link-btn-primary:hover { background: #1D4ED8; }
+    .link-btn-outline { background: transparent; color: var(--text-secondary); border: 1px solid var(--border); }
+    .link-btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ─── TIMELINE ─── */
+    #timeline { background: var(--surface); }
+    .timeline { position: relative; padding-left: 2rem; }
+    .timeline::before {
+      content: '';
+      position: absolute; left: 8px; top: 0; bottom: 0; width: 1px;
+      background: var(--border);
+    }
+    .tl-item { position: relative; margin-bottom: 2.5rem; }
+    .tl-dot {
+      position: absolute; left: -2.35rem; top: 4px;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+      background: var(--surface);
+      transition: all 0.3s;
+    }
+    .tl-item:hover .tl-dot { background: var(--accent); }
+    .tl-date {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    .tl-title {
+      font-family: 'Sora', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+    .tl-subtitle { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px; }
+    .tl-badges { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tl-badge {
+      font-size: 0.75rem;
+      padding: 3px 10px;
+      background: var(--accent-light);
+      color: var(--accent);
+      border-radius: 100px;
+    }
+    .tl-badge.violet { background: var(--violet-light); color: var(--violet); }
+    .tl-badge.green { background: var(--green-light); color: var(--green); }
+
+    .timeline-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; }
+    @media(max-width: 680px) { .timeline-grid { grid-template-columns: 1fr; } }
+    .tl-col-title {
+      font-family: 'Sora', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 2rem;
+    }
+
+    /* ─── CONTACT ─── */
+    #contact {
+      background: var(--text-primary);
+      color: #fff;
+    }
+    #contact .section-title { color: #fff; }
+    #contact .section-desc { color: rgba(255,255,255,0.6); }
+    .contact-grid { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .contact-card {
+      display: flex; align-items: center; gap: 12px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 16px 20px;
+      text-decoration: none;
+      color: rgba(255,255,255,0.85);
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s;
+      flex: 1; min-width: 200px;
+    }
+    .contact-card:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); transform: translateY(-2px); }
+    .contact-icon {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+    }
+    .ci-github { background: rgba(255,255,255,0.1); }
+    .ci-email { background: rgba(37,99,235,0.4); }
+
+    footer {
+      background: var(--text-primary);
+      padding: 24px 2rem;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      text-align: center;
+    }
+    footer p { font-size: 0.8rem; color: rgba(255,255,255,0.3); }
+    footer span { color: rgba(255,255,255,0.5); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media(max-width: 860px) {
+      .hero { flex-direction: column; gap: 3rem; text-align: center; }
+      .hero-content { max-width: 100%; }
+      .hero-actions { justify-content: center; }
+      .hero-visual { justify-content: center; }
+      .hero-card { width: 260px; }
+    }
+    @media(max-width: 600px) {
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">지석<span>.</span>dev</div>
+    <ul class="nav-links">
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#timeline">Timeline</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section style="padding-top:0">
+  <div class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">Backend Developer · 포트폴리오</div>
+      <h1>안녕하세요,<br><span class="name-accent">정지석</span>입니다.</h1>
+      <p class="hero-sub">Backend Engineer · Java · Spring Boot</p>
+      <p class="hero-desc">
+        서버사이드 개발에 깊이 있는 관심을 가진 백엔드 지향 개발자입니다.<br>
+        Spring Boot와 Java를 중심으로 확장 가능하고 신뢰할 수 있는 시스템을 설계합니다.
+      </p>
+      <div class="hero-actions">
+        <a href="#projects" class="btn-primary">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          프로젝트 보기
+        </a>
+        <a href="https://github.com/your-github-id" target="_blank" class="btn-secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          GitHub
+        </a>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="hero-card">
+        <div class="hero-card-header">
+          <div class="avatar">지</div>
+          <div>
+            <div class="hero-card-name">정지석</div>
+            <div class="hero-card-role">Backend Developer</div>
+          </div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-item">
+            <div class="stat-num">2</div>
+            <div class="stat-label">Projects</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num">3+</div>
+            <div class="stat-label">Years Study</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num">10+</div>
+            <div class="stat-label">Technologies</div>
+          </div>
+        </div>
+        <div class="mini-stack">
+          <span class="mini-tag">Java</span>
+          <span class="mini-tag">Spring Boot</span>
+          <span class="mini-tag">MySQL</span>
+          <span class="mini-tag">JPA</span>
+          <span class="mini-tag">Docker</span>
+          <span class="mini-tag">AWS EC2</span>
+          <span class="mini-tag">React</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="container">
+    <div class="section-label reveal">Technical Skills</div>
+    <h2 class="section-title reveal">기술 스택 & 역량</h2>
+    <p class="section-desc reveal">백엔드를 중심으로 풀스택 개발 경험을 쌓았습니다. 특히 Java/Spring 생태계와 RESTful API 설계에 강점이 있습니다.</p>
+
+    <div class="skills-grid reveal">
+      <div class="skill-category">
+        <h3>⚙️ Backend</h3>
+        <div class="skill-list">
+          <div class="skill-item">
+            <span class="skill-name">Java 17</span>
+            <div class="skill-bar-wrap"><div class="skill-bar" data-width="88"></div></div>
+          </div>
+          <div class="skill-item">
+            <span class="skill-name">Spring Boot 3</span>
+            <div class="skill-bar-wrap"><div class="skill-bar" data-width="85"></div></div>
+          </div>
+          <div class="skill-item">
+            <span class="skill-name">Spring Security</span>
+            <div class="skill-bar-wrap"><div class="skill-bar" data-width="78"></div></div>
+          </div>
+          <div class="skill-item">
+            <span class="skill-name">JPA / Hibernate</span>
+            <div class="skill-bar-wrap"><div class="skill-bar" data-width="80"></div></div>
+          </div>
+          <div class="skill-item">
+            <span class="skill-name">Node.js / Express</span>
+            <div class="skill-bar-wrap"><div class="skill-bar" data-width="60"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="skill-category">
+        <h3>🗄️ Database & Infra</h3>
+        <div class="skill-list">
+          <div class="skill-item">
+            <span class="skill-name">MySQL 8.0</span>
+            <div class="skill-bar-wrap"><div class="skill-bar" data-width="82"></div></div>
+          </div>
+          <div class="skill-item">
+            <span class="skill-name">MongoDB</span>
+            <div class="skill-bar-wrap"><div class="skill-bar" data-width="55"></div></div>
+          </div>
+          <div class="skill-item">
+            <span class="skill-name">Docker / Compose</span>
+            <div class="skill-bar-wrap"><div class="skill-bar" data-width="75"></div></div>
+          </div>
+          <div class="skill-item">
+            <span class="skill-name">AWS EC2</span>
+            <div class="skill-bar-wrap"><div class="skill-bar" data-width="60"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="skill-category">
+        <h3>🎨 Frontend</h3>
+        <div class="skill-list">
+          <div class="skill-item">
+            <span class="skill-name">React / TypeScript</span>
+            <div class="skill-bar-wrap"><div class="skill-bar" data-width="72"></div></div>
+          </div>
+          <div class="skill-item">
+            <span class="skill-name">Vite</span>
+            <div class="skill-bar-wrap"><div class="skill-bar" data-width="68"></div></div>
+          </div>
+          <div class="skill-item">
+            <span class="skill-name">HTML / CSS / JS</span>
+            <div class="skill-bar-wrap"><div class="skill-bar" data-width="75"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="skill-category">
+        <h3>🤖 Auth & AI Integration</h3>
+        <div class="skill-list">
+          <div class="skill-item">
+            <span class="skill-name">JWT 인증</span>
+            <div class="skill-bar-wrap"><div class="skill-bar" data-width="85"></div></div>
+          </div>
+          <div class="skill-item">
+            <span class="skill-name">OAuth 2.0 (Google·Kakao·Naver)</span>
+            <div class="skill-bar-wrap"><div class="skill-bar" data-width="80"></div></div>
+          </div>
+          <div class="skill-item">
+            <span class="skill-name">OpenAI GPT API</span>
+            <div class="skill-bar-wrap"><div class="skill-bar" data-width="70"></div></div>
+          </div>
+          <div class="skill-item">
+            <span class="skill-name">Clova Speech STT</span>
+            <div class="skill-bar-wrap"><div class="skill-bar" data-width="65"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tag-cloud reveal" style="margin-top:2.5rem">
+      <span class="tag tag-blue">Java</span>
+      <span class="tag tag-blue">Spring Boot</span>
+      <span class="tag tag-blue">Spring Security</span>
+      <span class="tag tag-blue">JPA</span>
+      <span class="tag tag-blue">JWT</span>
+      <span class="tag tag-blue">OAuth 2.0</span>
+      <span class="tag tag-violet">React</span>
+      <span class="tag tag-violet">TypeScript</span>
+      <span class="tag tag-violet">Vite</span>
+      <span class="tag tag-violet">Node.js</span>
+      <span class="tag tag-green">MySQL</span>
+      <span class="tag tag-green">Docker</span>
+      <span class="tag tag-green">AWS EC2</span>
+      <span class="tag tag-green">MongoDB</span>
+      <span class="tag tag-orange">GPT-4o-mini</span>
+      <span class="tag tag-orange">Clova STT</span>
+      <span class="tag tag-orange">FastAPI</span>
+      <span class="tag tag-red">Python</span>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="container">
+    <div class="section-label reveal">Projects</div>
+    <h2 class="section-title reveal">주요 프로젝트</h2>
+    <p class="section-desc reveal">직접 기획하고 개발한 서비스입니다. 백엔드 아키텍처 설계부터 AI 연동, 배포까지 end-to-end로 경험했습니다.</p>
+
+    <div class="projects-grid">
+      <!-- ITPT -->
+      <div class="project-card reveal">
+        <div class="project-header">
+          <div class="project-icon blue">🎤</div>
+          <span class="project-status">✓ 개발중</span>
+        </div>
+        <h3>ITPT</h3>
+        <p class="project-en">IT Interview Practice Tool</p>
+        <p class="project-desc">
+          개발자를 위한 CS 기술 면접 준비 플랫폼. 음성으로 답변하면 STT로 변환 후 GPT-4o-mini가 채점·피드백·꼬리질문을 자동 생성합니다.
+        </p>
+        <ul class="project-features">
+          <li>OS · DB · Java · Spring · Network 카테고리별 면접 세션</li>
+          <li>STT(Clova Speech) + AI 채점 + 꼬리 질문 자동 생성</li>
+          <li>통계 대시보드 (카테고리별 약점 분석, Recharts 시각화)</li>
+          <li>관리자 페이지 (문제 은행 CRUD, 유저 관리, 면접 기록 조회)</li>
+          <li>Google · Kakao · Naver OAuth 2.0 소셜 로그인</li>
+          <li>Docker Compose 기반 로컬 개발, AWS EC2 배포 </li>
+        </ul>
+        <div class="project-tech">
+          <span class="tech-tag">Spring Boot 3</span>
+          <span class="tech-tag">Java 17</span>
+          <span class="tech-tag">Spring Security</span>
+          <span class="tech-tag">JPA</span>
+          <span class="tech-tag">MySQL 8</span>
+          <span class="tech-tag">JWT</span>
+          <span class="tech-tag">OAuth 2.0</span>
+          <span class="tech-tag">GPT-4o-mini</span>
+          <span class="tech-tag">Clova STT</span>
+          <span class="tech-tag">React</span>
+          <span class="tech-tag">TypeScript</span>
+          <span class="tech-tag">Docker</span>
+        </div>
+        <div class="project-links">
+          <a href="https://github.com/your-github-id/itpt" target="_blank" class="link-btn link-btn-primary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            GitHub
+          </a>
+          <a href="#" class="link-btn link-btn-outline">🔗 Live Demo</a>
+        </div>
+      </div>
+
+      <!-- Chronote -->
+      <div class="project-card reveal" style="transition-delay:0.1s">
+        <div class="project-header">
+          <div class="project-icon violet">📚</div>
+          <span class="project-status" style="background:var(--orange-light);color:var(--orange)">⚡ 개발중</span>
+        </div>
+        <h3>Chronote</h3>
+        <p class="project-en">AI-based Learning Management Platform</p>
+        <p class="project-desc">
+          AI 기반 학습 관리 플랫폼. 관심사 매칭으로 그룹 스터디를 연결하고, 타이머·투두·랭킹·학습 데이터 시각화로 꾸준한 학습을 지원합니다.
+        </p>
+        <ul class="project-features">
+          <li>AI 관심사 매칭으로 그룹 스터디 자동 연결 (FastAPI)</li>
+          <li>실시간 그룹 채팅, 개인 학습 기록 관리</li>
+          <li>타이머 / 투두 시스템 + 랭킹 보드</li>
+          <li>학습 통계 데이터 시각화 대시보드</li>
+          <li>Node.js/Express 백엔드 → Java/Spring Boot 마이그레이션 </li>
+        </ul>
+        <div class="project-tech">
+          <span class="tech-tag">Node.js</span>
+          <span class="tech-tag">Express</span>
+          <span class="tech-tag">FastAPI</span>
+          <span class="tech-tag">Python</span>
+          <span class="tech-tag">MySQL</span>
+          <span class="tech-tag">MongoDB</span>
+          <span class="tech-tag">React</span>
+          <span class="tech-tag">SCSS</span>
+        </div>
+        <div class="project-links">
+          <a href="https://github.com/your-github-id/chronote" target="_blank" class="link-btn link-btn-primary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            GitHub
+          </a>
+          <a href="#" class="link-btn link-btn-outline">🔗 Live Demo</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TIMELINE -->
+<section id="timeline">
+  <div class="container">
+    <div class="section-label reveal">Timeline</div>
+    <h2 class="section-title reveal">경력 & 학력</h2>
+    <p class="section-desc reveal">배움과 성장의 발자취입니다.</p>
+
+    <div class="timeline-grid reveal">
+      <!-- Education -->
+      <div>
+        <div class="tl-col-title">🎓 학력</div>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-dot"></div>
+            <div class="tl-date">2024.03 — 2026.08</div>
+            <div class="tl-title">단국대학교</div>
+            <div class="tl-subtitle">소프트웨어학과</div>
+            <div class="tl-badges">
+              <span class="tl-badge">Software</span>
+              <span class="tl-badge violet">졸업프로젝트</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity -->
+      <div>
+        <div class="tl-col-title">💼 활동 & 프로젝트</div>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-dot"></div>
+            <div class="tl-date">2025.12 — Present</div>
+            <div class="tl-title">ITPT 개발</div>
+            <div class="tl-subtitle">CS 기술 면접 준비 플랫폼 (졸업 프로젝트)</div>
+            <div class="tl-badges">
+              <span class="tl-badge">Spring Boot</span>
+              <span class="tl-badge violet">AI 연동</span>
+              <span class="tl-badge green">풀스택</span>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot"></div>
+            <div class="tl-date">2025.09 — 2025.12</div>
+            <div class="tl-title">Chronote 개발</div>
+            <div class="tl-subtitle">AI 기반 학습 관리 플랫폼</div>
+            <div class="tl-badges">
+              <span class="tl-badge">Node.js</span>
+              <span class="tl-badge violet">FastAPI</span>
+              <span class="tl-badge green">팀 프로젝트</span>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot"></div>
+            <div class="tl-date">자격증 / 수상</div>
+            <div class="tl-title">취득 자격증 기재</div>
+            <div class="tl-subtitle"> </div>
+            <div class="tl-badges">
+              <span class="tl-badge green">자격증</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <div class="section-label reveal" style="color:rgba(255,255,255,0.4)">Contact</div>
+    <h2 class="section-title reveal">연락하기</h2>
+    <p class="section-desc reveal">함께 일하고 싶으시다면 편하게 연락 주세요.</p>
+    <div class="contact-grid reveal">
+      <a href="https://github.com/100bee" target="_blank" class="contact-card">
+        <div class="contact-icon ci-github">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        </div>
+        github.com/100bee
+      </a>
+      <a href="mailto:wjdwltjr3939@naver.com" class="contact-card">
+        <div class="contact-icon ci-email">✉️</div>
+        wjdwltjr3939@naver.com
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2025 <span>정지석</span>. Built with HTML · CSS · JS</p>
+</footer>
+
+<script>
+  // Intersection Observer - reveal on scroll
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        // animate skill bars
+        entry.target.querySelectorAll('.skill-bar').forEach(bar => {
+          bar.style.width = bar.dataset.width + '%';
+        });
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  reveals.forEach(el => observer.observe(el));
+
+  // Smooth active nav highlight
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(sec => {
+      if (window.scrollY >= sec.offsetTop - 80) current = sec.id;
+    });
+    navLinks.forEach(a => {
+      a.style.color = a.getAttribute('href') === '#' + current ? 'var(--accent)' : '';
+    });
+  });
+</script>
+</body>
+</html>
