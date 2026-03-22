@@ -91,7 +91,7 @@
       padding: 4px 12px;
       border-radius: 100px;
       margin-bottom: 1.5rem;
-      
+      animation: fadeUp 0.6s ease both;
     }
     .hero-badge::before { content: '●'; font-size: 0.5rem; animation: pulse 2s infinite; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
@@ -103,7 +103,7 @@
       line-height: 1.1;
       letter-spacing: -0.04em;
       margin-bottom: 0.5rem;
-      
+      animation: fadeUp 0.6s 0.1s ease both;
     }
     .hero h1 .name-accent { color: var(--accent); }
     .hero-sub {
@@ -112,18 +112,18 @@
       font-weight: 400;
       color: var(--text-secondary);
       margin-bottom: 1.5rem;
-      
+      animation: fadeUp 0.6s 0.2s ease both;
     }
     .hero-desc {
       font-size: 1rem;
       color: var(--text-secondary);
       line-height: 1.8;
       margin-bottom: 2.5rem;
-      
+      animation: fadeUp 0.6s 0.3s ease both;
     }
     .hero-actions {
       display: flex; gap: 1rem; flex-wrap: wrap;
-      
+      animation: fadeUp 0.6s 0.4s ease both;
     }
     .btn-primary {
       display: inline-flex; align-items: center; gap: 8px;
@@ -154,7 +154,7 @@
 
     .hero-visual {
       flex: 1; display: flex; justify-content: flex-end; align-items: center;
-      
+      animation: fadeUp 0.6s 0.3s ease both;
     }
     .hero-card {
       background: var(--surface);
@@ -222,7 +222,7 @@
       line-height: 1.8;
       margin-bottom: 3rem;
     }
-    .reveal { opacity: 1; transform: translateY(0); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
     .reveal.visible { opacity: 1; transform: translateY(0); }
 
     /* ─── SKILLS ─── */
@@ -247,11 +247,8 @@
       letter-spacing: 0.08em;
       margin-bottom: 16px;
     }
-    .skill-list { display: flex; flex-direction: column; gap: 10px; }
-    .skill-item { display: flex; align-items: center; justify-content: space-between; }
-    .skill-name { font-size: 0.88rem; font-weight: 500; color: var(--text-primary); }
-    .skill-bar-wrap { width: 120px; height: 6px; background: var(--border); border-radius: 4px; overflow: hidden; }
-    .skill-bar { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--accent), var(--violet)); width: 0; transition: width 1s cubic-bezier(0.4,0,0.2,1); }
+    .skill-list { display: flex; flex-wrap: wrap; gap: 8px; }
+    .skill-item { font-size: 0.88rem; font-weight: 500; color: var(--text-primary); background: var(--surface); border: 1px solid var(--border); padding: 6px 14px; border-radius: 6px; }
 
     .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2rem; }
     .tag {
@@ -554,70 +551,40 @@
       <div class="skill-category">
         <h3>⚙️ Backend</h3>
         <div class="skill-list">
-          <div class="skill-item">
-            <span class="skill-name">Java 17</span>
-            <div class="skill-bar-wrap"><div class="skill-bar" data-width="88"></div></div>
-          </div>
-          <div class="skill-item">
-            <span class="skill-name">Spring Boot 3</span>
-            <div class="skill-bar-wrap"><div class="skill-bar" data-width="85"></div></div>
-          </div>
-          <div class="skill-item">
-            <span class="skill-name">Spring Security</span>
-            <div class="skill-bar-wrap"><div class="skill-bar" data-width="78"></div></div>
-          </div>
-          <div class="skill-item">
-            <span class="skill-name">JPA / Hibernate</span>
-            <div class="skill-bar-wrap"><div class="skill-bar" data-width="80"></div></div>
-          </div>
-          <div class="skill-item">
-            <span class="skill-name">Node.js / Express</span>
-            <div class="skill-bar-wrap"><div class="skill-bar" data-width="60"></div></div>
-          </div>
+          <div class="skill-item">Java 17</div>
+          <div class="skill-item">Spring Boot 3</div>
+          <div class="skill-item">Spring Security</div>
+          <div class="skill-item">JPA / Hibernate</div>
+          <div class="skill-item">Node.js / Express</div>
         </div>
       </div>
 
       <div class="skill-category">
         <h3>🗄️ Database & Infra</h3>
         <div class="skill-list">
-          <div class="skill-item">
-            <span class="skill-name">MySQL 8.0</span>
-            <div class="skill-bar-wrap"><div class="skill-bar" data-width="82"></div></div>
-          </div>
-          <div class="skill-item">
-            <span class="skill-name">MongoDB</span>
-            <div class="skill-bar-wrap"><div class="skill-bar" data-width="55"></div></div>
-          </div>
-          <div class="skill-item">
-            <span class="skill-name">Docker / Compose</span>
-            <div class="skill-bar-wrap"><div class="skill-bar" data-width="75"></div></div>
-          </div>
-          <div class="skill-item">
-            <span class="skill-name">AWS EC2</span>
-            <div class="skill-bar-wrap"><div class="skill-bar" data-width="60"></div></div>
-          </div>
+          <div class="skill-item">MySQL 8.0</div>
+          <div class="skill-item">MongoDB</div>
+          <div class="skill-item">Docker / Compose</div>
+          <div class="skill-item">AWS EC2</div>
+        </div>
+      </div>
+
+      <div class="skill-category">
+        <h3>🎨 Frontend</h3>
+        <div class="skill-list">
+          <div class="skill-item">React / TypeScript</div>
+          <div class="skill-item">Vite</div>
+          <div class="skill-item">HTML / CSS / JS</div>
         </div>
       </div>
 
       <div class="skill-category">
         <h3>🤖 Auth & AI Integration</h3>
         <div class="skill-list">
-          <div class="skill-item">
-            <span class="skill-name">JWT 인증</span>
-            <div class="skill-bar-wrap"><div class="skill-bar" data-width="85"></div></div>
-          </div>
-          <div class="skill-item">
-            <span class="skill-name">OAuth 2.0 (Google·Kakao·Naver)</span>
-            <div class="skill-bar-wrap"><div class="skill-bar" data-width="80"></div></div>
-          </div>
-          <div class="skill-item">
-            <span class="skill-name">OpenAI GPT API</span>
-            <div class="skill-bar-wrap"><div class="skill-bar" data-width="70"></div></div>
-          </div>
-          <div class="skill-item">
-            <span class="skill-name">Clova Speech STT</span>
-            <div class="skill-bar-wrap"><div class="skill-bar" data-width="65"></div></div>
-          </div>
+          <div class="skill-item">JWT 인증</div>
+          <div class="skill-item">OAuth 2.0 (Google·Kakao·Naver)</div>
+          <div class="skill-item">OpenAI GPT API</div>
+          <div class="skill-item">Clova Speech STT</div>
         </div>
       </div>
     </div>
@@ -834,10 +801,6 @@
       if (entry.isIntersecting) {
         entry.target.classList.add('visible');
         // animate skill bars
-        entry.target.querySelectorAll('.skill-bar').forEach(bar => {
-          bar.style.width = bar.dataset.width + '%';
-        });
-        observer.unobserve(entry.target);
       }
     });
   }, { threshold: 0.15 });
