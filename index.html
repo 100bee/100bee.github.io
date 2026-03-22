@@ -600,24 +600,6 @@
       </div>
 
       <div class="skill-category">
-        <h3>🎨 Frontend</h3>
-        <div class="skill-list">
-          <div class="skill-item">
-            <span class="skill-name">React / TypeScript</span>
-            <div class="skill-bar-wrap"><div class="skill-bar" data-width="72"></div></div>
-          </div>
-          <div class="skill-item">
-            <span class="skill-name">Vite</span>
-            <div class="skill-bar-wrap"><div class="skill-bar" data-width="68"></div></div>
-          </div>
-          <div class="skill-item">
-            <span class="skill-name">HTML / CSS / JS</span>
-            <div class="skill-bar-wrap"><div class="skill-bar" data-width="75"></div></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="skill-category">
         <h3>🤖 Auth & AI Integration</h3>
         <div class="skill-list">
           <div class="skill-item">
@@ -834,7 +816,7 @@
       </a>
       <a href="mailto:wjdwltjr3939@naver.com" class="contact-card">
         <div class="contact-icon ci-email">✉️</div>
-        ✉️ wjdwltjr3939@naver.com
+        wjdwltjr3939@naver.com
       </a>
     </div>
   </div>
@@ -866,4 +848,13 @@
   const navLinks = document.querySelectorAll('.nav-links a');
   window.addEventListener('scroll', () => {
     let current = '';
-    sectio
+    sections.forEach(sec => {
+      if (window.scrollY >= sec.offsetTop - 80) current = sec.id;
+    });
+    navLinks.forEach(a => {
+      a.style.color = a.getAttribute('href') === '#' + current ? 'var(--accent)' : '';
+    });
+  });
+</script>
+</body>
+</html>
