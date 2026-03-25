@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chronote Client Preview</title>
+  <link rel="icon" type="image/png" href="./favicon.png" />
+  <style>
+    :root {
+      --orange: #f97316;
+      --orange-dark: #ea580c;
+      --orange-light: #fed7aa;
+      --orange-glow: rgba(249, 115, 22, 0.15);
+      --bg-light: #fafaf9;
+      --surface-light: #ffffff;
+      --border-light: #e8e4df;
+      --text-primary: #1c1917;
+      --text-secondary: #78716c;
+      --text-muted: #a8a29e;
+      --bg-dark: #141412;
+      --surface-dark: #1e1c1a;
+      --surface-dark2: #272522;
+      --border-dark: #2e2b28;
+      --text-dark: #e7e5e4;
+      --text-dark2: #a8a29e;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+      --radius-xl: 24px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
+      --shadow-lg: 0 12px 40px rgba(0,0,0,0.12);
+      --shadow-orange: 0 4px 20px rgba(249,115,22,0.25);
+      --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      --topbar-height: 64px;
+      --sidebar-width: 240px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: "Noto Sans KR", "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg-light);
+      color: var(--text-primary);
+      transition: var(--transition);
+    }
+    body.darkmode {
+      background: var(--bg-dark);
+      color: var(--text-dark);
+    }
+    button, input, textarea {
+      font: inherit;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    .hidden { display: none !important; }
+
+    .card {
+      background: var(--surface-light);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      transition: var(--transition);
+    }
+    body.darkmode .card {
+      background: var(--surface-dark);
+      border-color: var(--border-dark);
+      color: var(--text-dark);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+      color: #fff;
+      border: none;
+      box-shadow: var(--shadow-orange);
+      border-radius: var(--radius-md);
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .btn-primary:hover { transform: translateY(-1px); }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1.5px solid var(--border-light);
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .btn-outline:hover {
+      border-color: var(--orange);
+      color: var(--orange);
+      background: var(--orange-glow);
+    }
+    body.darkmode .btn-outline {
+      border-color: var(--border-dark);
+      color: var(--text-dark2);
+    }
+
+    .input-base {
+      width: 100%;
+      border: 1px solid var(--border-light);
+      background: var(--surface-light);
+      color: var(--text-primary);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      outline: none;
+      transition: var(--transition);
+    }
+    .input-base:focus {
+      border-color: var(--orange);
+      box-shadow: 0 0 0 3px var(--orange-glow);
+    }
+    .input-base::placeholder { color: var(--text-muted); }
+    body.darkmode .input-base {
+      background: var(--surface-dark2);
+      border-color: var(--border-dark);
+      color: var(--text-dark);
+    }
+    body.darkmode .input-base::placeholder { color: var(--text-dark2); }
+
+    .screen {
+      min-height: 100vh;
+    }
+
+    /* first page */
+    .first-screen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      min-height: 100vh;
+      padding: 40px;
+      position: relative;
+      overflow: hidden;
+      background: var(--bg-light);
+    }
+    body.darkmode .first-screen { background: var(--bg-dark); }
+    .first-screen::before {
+      content: "";
+      position: absolute;
+      top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 800px; height: 800px;
+      background: radial-gradient(circle, var(--orange-glow) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .firstpage-logo {
+      width: 88px; height: 88px; object-fit: contain; margin-bottom: 20px;
+      filter: drop-shadow(0 8px 24px rgba(249,115,22,0.30));
+      animation: float 4s ease-in-out infinite;
+      position: relative; z-index: 1;
+    }
+    .first-title {
+      font-size: 2.5rem; font-weight: 800; letter-spacing: -1.8px; margin: 0 0 12px; z-index: 1;
+    }
+    .first-title span { color: var(--orange); }
+    .first-subtitle {
+      margin: 0 0 36px; color: var(--text-secondary); max-width: 420px; line-height: 1.7; z-index: 1;
+    }
+    body.darkmode .first-subtitle { color: var(--text-dark2); }
+    .button-stack { display: flex; flex-direction: column; gap: 12px; width: 280px; z-index: 1; }
+    .button-stack button { min-height: 52px; font-size: 1rem; }
+
+    /* login / signup */
+    .auth-screen {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center; position: relative;
+      overflow: hidden; background: var(--bg-light); padding: 40px 20px;
+    }
+    body.darkmode .auth-screen { background: var(--bg-dark); }
+    .auth-screen::before {
+      content: ""; position: absolute; top: -200px; right: -200px; width: 600px; height: 600px;
+      background: radial-gradient(circle, var(--orange-glow) 0%, transparent 70%);
+    }
+    .auth-screen::after {
+      content: ""; position: absolute; bottom: -150px; left: -150px; width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(249,115,22,0.08) 0%, transparent 70%);
+    }
+    .auth-box {
+      width: 440px; padding: 48px 44px; text-align: center; position: relative; z-index: 1;
+    }
+    .auth-brand {
+      display: inline-flex; align-items: center; gap: 10px; margin-bottom: 8px;
+      font-size: 28px; font-weight: 800; letter-spacing: -1px; color: var(--orange);
+    }
+    .auth-brand img { width: 34px; height: 34px; object-fit: contain; }
+    .auth-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 28px; }
+    .auth-form { display: flex; flex-direction: column; gap: 12px; text-align: left; }
+    .auth-links { display: flex; justify-content: center; gap: 18px; margin-top: 22px; font-size: 13px; }
+    .auth-links button { background: none; border: none; color: var(--text-muted); cursor: pointer; }
+    .auth-links button:hover { color: var(--orange); }
+    .row { display: flex; gap: 10px; }
+
+    /* app */
+    .app-shell { min-height: 100vh; background: var(--bg-light); }
+    body.darkmode .app-shell { background: var(--bg-dark); }
+    .header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000; height: var(--topbar-height);
+      background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px;
+    }
+    body.darkmode .header {
+      background: rgba(20,20,18,0.92); border-bottom-color: var(--border-dark);
+    }
+    .nav-group { display: flex; align-items: center; gap: 32px; height: 64px; }
+    .logo-link { display: flex; align-items: center; gap: 10px; }
+    .logo-link img { height: 36px; width: auto; }
+    .brand { font-size: 20px; font-weight: 700; color: var(--orange); letter-spacing: -0.5px; }
+    .nav-center, .nav-right { display: flex; align-items: center; gap: 6px; }
+    .nav-item, .nav-right button.mode-toggle-btn {
+      border: none; background: none; text-decoration: none; color: var(--text-secondary); font-weight: 500;
+      font-size: 0.95rem; padding: 6px 14px; border-radius: var(--radius-sm); cursor: pointer; transition: var(--transition);
+    }
+    .nav-item:hover, .nav-right button.mode-toggle-btn:hover { color: var(--orange); background: var(--orange-glow); }
+    .nav-item.active { color: var(--orange); background: var(--orange-glow); font-weight: 600; }
+    body.darkmode .nav-item, body.darkmode .nav-right button.mode-toggle-btn { color: var(--text-dark2); }
+
+    .app-body { display: flex; padding-top: var(--topbar-height); }
+    .sidebar {
+      width: var(--sidebar-width); background: var(--surface-light); border-right: 1px solid var(--border-light);
+      padding: 24px 16px; height: calc(100vh - var(--topbar-height)); position: fixed; top: var(--topbar-height); left: 0; overflow-y: auto;
+    }
+    body.darkmode .sidebar { background: var(--surface-dark); border-right-color: var(--border-dark); }
+    .sidebar-title {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted);
+      padding: 0 12px; margin-bottom: 8px;
+    }
+    .menu-list { list-style: none; margin: 0; padding: 0; }
+    .menu-item {
+      padding: 10px 14px; margin-bottom: 2px; cursor: pointer; color: var(--text-secondary); border-radius: var(--radius-sm);
+      font-size: 0.95rem; font-weight: 500; transition: var(--transition); display: flex; align-items: center; gap: 10px;
+    }
+    .menu-item:hover { color: var(--text-primary); background: var(--bg-light); }
+    .menu-item.active { background: var(--orange-glow); color: var(--orange); font-weight: 600; }
+    body.darkmode .menu-item { color: var(--text-dark2); }
+    body.darkmode .menu-item:hover { color: var(--text-dark); background: var(--surface-dark2); }
+
+    .main-area {
+      flex: 1; margin-left: var(--sidebar-width); padding: 32px 40px; min-height: calc(100vh - var(--topbar-height)); background: var(--bg-light);
+    }
+    body.darkmode .main-area { background: var(--bg-dark); }
+
+    .section-title { margin: 0 0 6px; font-size: 1.8rem; font-weight: 800; letter-spacing: -1px; }
+    .section-desc { margin: 0 0 28px; color: var(--text-secondary); font-size: 0.95rem; }
+    body.darkmode .section-desc { color: var(--text-dark2); }
+
+    /* main page */
+    .main-center-wrap {
+      display: flex; flex-direction: row; gap: 0; align-items: flex-start; width: 960px; max-width: 100%; justify-content: center;
+      margin: 0 auto;
+    }
+    .main-calendar-box, .main-today-box {
+      padding: 32px; min-width: 380px; max-width: 460px; min-height: 420px; display: flex; flex-direction: column; align-items: center; flex: 1;
+    }
+    .main-divider {
+      width: 3px; background: linear-gradient(180deg, transparent, var(--orange), transparent); min-height: 420px; margin: 0 32px;
+      border-radius: 99px; align-self: stretch; opacity: 0.5;
+    }
+    .calendar-mock {
+      width: 100%; max-width: 320px; background: var(--surface-light); border-radius: 14px; border: 1px solid var(--border-light); padding: 20px;
+    }
+    body.darkmode .calendar-mock { background: var(--surface-dark2); border-color: var(--border-dark); }
+    .calendar-header { display:flex; justify-content:space-between; align-items:center; margin-bottom: 16px; font-weight:700; }
+    .calendar-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:8px; font-size:0.88rem; }
+    .calendar-grid div { text-align:center; padding:8px 0; border-radius:10px; }
+    .calendar-grid .day { color: var(--text-muted); font-size: 0.8rem; }
+    .calendar-grid .today { background: var(--orange); color: #fff; font-weight: 700; box-shadow: var(--shadow-orange); }
+    .main-today-title { color: var(--orange); font-size: 1.3rem; font-weight: 800; margin-bottom: 20px; letter-spacing: -0.5px; align-self: flex-start; }
+    .main-today-input-wrap { display:flex; gap:8px; margin-bottom:16px; width:100%; }
+    .main-today-input { flex: 1; }
+    .main-today-btn { padding: 10px 18px; }
+    .main-today-list { list-style:none; padding:0; margin:0; width:100%; display:flex; flex-direction:column; gap:6px; }
+    .main-today-list li {
+      padding: 10px 14px; background: var(--bg-light); border-radius: var(--radius-sm); font-size: 0.9rem; color: var(--text-secondary);
+      border: 1px solid var(--border-light); transition: var(--transition);
+    }
+    .main-today-list li:hover { border-color: var(--orange); color: var(--text-primary); }
+    body.darkmode .main-today-list li { background: var(--surface-dark2); border-color: var(--border-dark); color: var(--text-dark2); }
+
+    /* match */
+    .match-page {
+      display: flex; align-items: center; justify-content: center; gap: 60px; min-height: calc(100vh - 140px); padding: 20px 0;
+    }
+    .match-left { flex: 1; max-width: 480px; }
+    .match-left h1 { font-size: 2rem; font-weight: 800; color: var(--text-primary); letter-spacing: -1px; margin: 0 0 8px; }
+    body.darkmode .match-left h1 { color: var(--text-dark); }
+    .match-left p { color: var(--text-secondary); font-size: 1rem; margin: 0 0 28px; line-height: 1.6; }
+    body.darkmode .match-left p { color: var(--text-dark2); }
+    .match-left button { width: 100%; min-height: 54px; margin-top: 14px; }
+    .error-msg {
+      margin-top: 12px; padding: 12px 16px; background: #fef2f2; border: 1px solid #fecaca; border-radius: var(--radius-sm); color: #dc2626; font-size: 0.9rem;
+    }
+    body.darkmode .error-msg { background: #1c0a0a; border-color: #7f1d1d; color: #f87171; }
+    .match-right { flex: 1; display: flex; justify-content: center; max-width: 320px; }
+    .match-image { width: 100%; max-width: 240px; opacity: 0.9; filter: drop-shadow(0 20px 40px rgba(249,115,22,0.2)); animation: float 4s ease-in-out infinite; }
+    .match-result {
+      margin-top: 18px; padding: 18px 20px; border-radius: var(--radius-md); border: 1px solid var(--border-light); background: var(--surface-light);
+      box-shadow: var(--shadow-sm);
+    }
+    body.darkmode .match-result { background: var(--surface-dark); border-color: var(--border-dark); }
+    .result-title { font-weight: 700; margin-bottom: 8px; }
+    .result-tags { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+    .result-tag { background: var(--orange-glow); color: var(--orange); padding:6px 10px; border-radius:999px; font-size:12px; font-weight:700; }
+
+    /* chat */
+    .chatroom-container {
+      display: flex; flex-direction: column; height: calc(100vh - 128px); background: var(--bg-light); border-radius: var(--radius-lg); overflow: hidden;
+    }
+    body.darkmode .chatroom-container { background: var(--bg-dark); }
+    .chatroom-header {
+      padding: 16px 28px; background: var(--surface-light); border-bottom: 1px solid var(--border-light); font-size: 1rem; font-weight: 600;
+      color: var(--text-primary); display: flex; align-items: center; gap: 10px; box-shadow: var(--shadow-sm);
+    }
+    .chatroom-header::before {
+      content: ""; width: 8px; height: 8px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 0 2px rgba(34,197,94,0.2);
+    }
+    body.darkmode .chatroom-header { background: var(--surface-dark); border-bottom-color: var(--border-dark); color: var(--text-dark); }
+    .chatroom-messages {
+      flex: 1; overflow-y: auto; padding: 24px 28px; display: flex; flex-direction: column; gap: 10px;
+    }
+    .chat-bubble {
+      max-width: 65%; padding: 10px 16px; border-radius: var(--radius-lg); font-size: 0.95rem; line-height: 1.5; word-break: break-word;
+      animation: bubbleIn 0.2s ease;
+    }
+    .chat-bubble strong { display:block; font-size:0.75rem; margin-bottom:2px; opacity:0.7; }
+    .chat-bubble.own {
+      align-self:flex-end; background: var(--orange); color:#fff; border-bottom-right-radius:4px;
+    }
+    .chat-bubble.other {
+      align-self:flex-start; background: var(--surface-light); color: var(--text-primary); border:1px solid var(--border-light); border-bottom-left-radius:4px;
+    }
+    body.darkmode .chat-bubble.other { background: var(--surface-dark); border-color: var(--border-dark); color: var(--text-dark); }
+    .chatroom-input { padding:16px 24px; background: var(--surface-light); border-top:1px solid var(--border-light); display:flex; gap:10px; }
+    body.darkmode .chatroom-input { background: var(--surface-dark); border-top-color: var(--border-dark); }
+    .chatroom-input input { flex:1; }
+    .chatroom-input button { padding:12px 24px; }
+
+    /* todo and feedback */
+    .dashboard-grid {
+      display:grid; grid-template-columns: 1.1fr 0.9fr; gap: 24px;
+    }
+    .panel { padding: 24px; }
+    .panel h3 { margin:0 0 12px; font-size:1.15rem; }
+    .todo-list { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px; }
+    .todo-item {
+      display:flex; align-items:center; justify-content:space-between; background: var(--surface-light); border:1px solid var(--border-light);
+      padding:14px 18px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);
+    }
+    body.darkmode .todo-item { background: var(--surface-dark2); border-color: var(--border-dark); }
+    .task-content { display:flex; align-items:center; gap:10px; flex:1; }
+    .dot { width:10px; height:10px; border-radius:50%; background: var(--orange); }
+    .task-text { font-size:0.95rem; font-weight:500; }
+    .status { font-size:0.8rem; color: var(--text-muted); font-style: italic; }
+    .pill {
+      background: var(--orange-glow); color: var(--orange); padding:7px 12px; border-radius:999px; font-size:12px; font-weight:700;
+    }
+    .stats-grid { display:grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+    .stat-card {
+      background: var(--surface-light); border:1px solid var(--border-light); border-radius: 12px; padding:20px 16px; text-align:center; box-shadow: var(--shadow-sm);
+    }
+    body.darkmode .stat-card { background: var(--surface-dark); border-color: var(--border-dark); }
+    .stat-card .icon { font-size: 1.6rem; margin-bottom: 6px; }
+    .stat-card .value { font-size: 1.4rem; font-weight: 800; color: var(--orange); }
+    .stat-card .label { font-size: 0.8rem; color: var(--text-secondary); margin-top: 2px; }
+    body.darkmode .stat-card .label { color: var(--text-dark2); }
+    .feedback-box {
+      background: var(--surface-light); border:1px solid var(--border-light); border-radius: 16px; padding: 28px 32px; box-shadow: var(--shadow-md); line-height: 1.8;
+    }
+    body.darkmode .feedback-box { background: var(--surface-dark); border-color: var(--border-dark); }
+    .feedback-box h4 {
+      font-size: 1.05rem; font-weight: 700; color: var(--text-primary); margin: 22px 0 10px; padding-bottom: 8px; border-bottom: 2px solid var(--orange-light);
+    }
+    body.darkmode .feedback-box h4 { color: var(--text-dark); }
+    .feedback-box p { margin: 4px 0; color: #44403c; }
+    body.darkmode .feedback-box p { color: var(--text-dark2); }
+
+    .toolbar { display:flex; justify-content:space-between; align-items:center; gap:14px; margin-bottom:24px; }
+    .toolbar-right { display:flex; gap:10px; flex-wrap:wrap; }
+    .mini-note {
+      padding: 12px 14px; border-radius: 12px; background: var(--orange-glow); color: var(--orange-dark); font-size: 0.9rem; border:1px solid rgba(249,115,22,0.18);
+    }
+    body.darkmode .mini-note { color: #fdba74; }
+
+    @keyframes bubbleIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    @media (max-width: 1100px) {
+      .dashboard-grid, .stats-grid, .match-page, .main-center-wrap { grid-template-columns: 1fr; display: grid; }
+      .main-center-wrap { gap: 20px; }
+      .main-divider { display:none; }
+      .main-calendar-box, .main-today-box { max-width: 100%; min-width: 0; }
+      .match-right { order: -1; }
+    }
+    @media (max-width: 860px) {
+      .header { padding: 0 18px; }
+      .nav-center { display:none; }
+      .sidebar { position: static; width: 100%; height: auto; border-right: 0; border-bottom: 1px solid var(--border-light); }
+      body.darkmode .sidebar { border-bottom-color: var(--border-dark); }
+      .app-body { display:block; }
+      .main-area { margin-left: 0; padding: 22px 18px; }
+      .toolbar { flex-direction: column; align-items: flex-start; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 560px) {
+      .auth-box { width: 100%; padding: 32px 22px; }
+      .button-stack { width: 100%; }
+      .stats-grid { grid-template-columns: 1fr; }
+      .chat-bubble { max-width: 88%; }
+    }
+  </style>
+</head>
+<body>
+  <section class="screen first-screen" id="screen-first">
+    <img src="./favicon.png" alt="Chronote 로고" class="firstpage-logo" />
+    <h1 class="first-title"><span>Chro</span>note</h1>
+    <p class="first-subtitle">작은 계획이 큰 변화를 만듭니다. 오늘 할 일을 적어보세요.</p>
+    <div class="button-stack">
+      <button class="btn-primary" data-open="login">로그인</button>
+      <button class="btn-outline" data-open="signup">회원가입</button>
+      <button class="btn-outline" data-open="app">미리보기로 들어가기</button>
+    </div>
+  </section>
+
+  <section class="screen auth-screen hidden" id="screen-login">
+    <div class="auth-box card">
+      <div class="auth-brand"><img src="./favicon.png" alt="" />Chronote</div>
+      <div class="auth-sub">로그인하여 할 일과 그룹 채팅을 이어서 확인하세요</div>
+      <div class="auth-form">
+        <input class="input-base" type="email" value="bee@example.com" />
+        <input class="input-base" type="password" value="12345678" />
+        <button class="btn-primary" style="min-height:50px;" data-open="app">로그인</button>
+        <button class="btn-outline" style="min-height:48px;">Passkey로 로그인</button>
+      </div>
+      <div class="auth-links">
+        <button type="button" data-open="first">첫 화면</button>
+        <button type="button" data-open="signup">회원가입</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen auth-screen hidden" id="screen-signup">
+    <div class="auth-box card" style="width:480px;">
+      <div class="auth-brand"><img src="./favicon.png" alt="" />Chronote</div>
+      <div class="auth-sub">계정을 만들고 공부 루틴과 매칭 기능을 시작하세요</div>
+      <div class="auth-form">
+        <input class="input-base" placeholder="닉네임" value="100bee" />
+        <input class="input-base" placeholder="이메일" value="bee@example.com" />
+        <div class="row">
+          <input class="input-base" placeholder="비밀번호" value="12345678" />
+          <input class="input-base" placeholder="확인" value="12345678" />
+        </div>
+        <div class="row">
+          <input class="input-base" placeholder="학년" value="4학년" />
+          <input class="input-base" placeholder="관심 분야" value="백엔드" />
+        </div>
+        <button class="btn-primary" style="min-height:50px;" data-open="app">회원가입</button>
+      </div>
+      <div class="auth-links">
+        <button type="button" data-open="first">첫 화면</button>
+        <button type="button" data-open="login">로그인</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen app-shell hidden" id="screen-app">
+    <header class="header">
+      <div class="nav-group">
+        <a href="#" class="logo-link" id="go-main-logo">
+          <img src="./favicon2.png" alt="Chronote logo" />
+          <span class="brand">Chronote</span>
+        </a>
+        <nav class="nav-center">
+          <a href="#" class="nav-item active" data-page="main">Main</a>
+          <a href="#" class="nav-item" data-page="match">Match</a>
+          <a href="#" class="nav-item" data-page="chat">Chat</a>
+          <a href="#" class="nav-item" data-page="mypage">Mypage</a>
+        </nav>
+      </div>
+      <div class="nav-right">
+        <button class="mode-toggle-btn" id="modeToggle">🌙 Dark</button>
+        <span class="nav-item">bee_user 님</span>
+        <button class="nav-item" data-open="first">로그아웃</button>
+      </div>
+    </header>
+
+    <div class="app-body">
+      <aside class="sidebar">
+        <h2 class="sidebar-title">ChroNote</h2>
+        <ul class="menu-list">
+          <li class="menu-item active" data-page="main">오늘 할 일</li>
+          <li class="menu-item" data-page="match">AI 매칭</li>
+          <li class="menu-item" data-page="chat">채팅방</li>
+          <li class="menu-item" data-page="mypage">캘린더 / 분석</li>
+          <li class="menu-item" data-page="feedback">AI 피드백</li>
+        </ul>
+      </aside>
+
+      <main class="main-area">
+        <section class="app-page" id="page-main">
+          <div class="toolbar">
+            <div>
+              <h1 class="section-title">오늘 할 일</h1>
+              <p class="section-desc">메인 화면에서 캘린더와 오늘의 할 일을 바로 확인할 수 있습니다.</p>
+            </div>
+            <div class="toolbar-right">
+              <div class="mini-note">실제 client/src/pages/Main.js 레이아웃 기준으로 재구성한 HTML 미리보기</div>
+            </div>
+          </div>
+
+          <div class="main-center-wrap">
+            <div class="main-calendar-box card">
+              <div class="calendar-mock">
+                <div class="calendar-header">
+                  <span>2026년 3월</span>
+                  <span style="color:var(--text-muted);">◀ ▶</span>
+                </div>
+                <div class="calendar-grid">
+                  <div class="day">일</div><div class="day">월</div><div class="day">화</div><div class="day">수</div><div class="day">목</div><div class="day">금</div><div class="day">토</div>
+                  <div></div><div></div><div></div><div>1</div><div>2</div><div>3</div><div>4</div>
+                  <div>5</div><div>6</div><div>7</div><div>8</div><div>9</div><div>10</div><div>11</div>
+                  <div>12</div><div>13</div><div>14</div><div>15</div><div>16</div><div>17</div><div>18</div>
+                  <div>19</div><div>20</div><div class="today">21</div><div>22</div><div>23</div><div>24</div><div>25</div>
+                  <div>26</div><div>27</div><div>28</div><div>29</div><div>30</div><div>31</div><div></div>
+                </div>
+              </div>
+            </div>
+            <div class="main-divider"></div>
+            <div class="main-today-box card">
+              <h2 class="main-today-title">오늘의 할 일</h2>
+              <div class="main-today-input-wrap">
+                <input class="input-base main-today-input" type="text" id="todoInput" placeholder="새 할 일 입력" />
+                <button class="btn-primary main-today-btn" id="addTodoBtn">추가</button>
+              </div>
+              <ul class="main-today-list" id="mainTodoList">
+                <li>포트폴리오용 Chronote 설명 정리</li>
+                <li>Spring Security 면접 질문 답변 쓰기</li>
+                <li>AI 피드백 문구 다듬기</li>
+                <li style="color:var(--text-muted);text-decoration:line-through;">README 구조 수정하기</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="app-page hidden" id="page-match">
+          <div class="toolbar">
+            <div>
+              <h1 class="section-title">AI 채팅방 매칭</h1>
+              <p class="section-desc">MatchingPage.js와 matchPage.scss의 좌우 분할 화면을 그대로 따라간 미리보기입니다.</p>
+            </div>
+          </div>
+
+          <div class="match-page">
+            <div class="match-left">
+              <h1>AI 채팅방 매칭</h1>
+              <p>찾고 싶은 스터디 그룹을 입력하세요.</p>
+              <input class="input-base" id="matchInput" type="text" value="파이썬으로 데이터 분석하는 스터디 찾아요" />
+              <button class="btn-primary" id="matchBtn">매칭 시작</button>
+              <div class="match-result" id="matchResult">
+                <div class="result-title">추천 결과 · AI 실험실 02</div>
+                <div style="color:var(--text-secondary); line-height:1.6;" id="matchCopy">데이터 분석, Python, 추천 시스템 키워드와 가까운 채팅방입니다. 기존 인원 12명이 참여 중입니다.</div>
+                <div class="result-tags" id="matchTags">
+                  <span class="result-tag">Python</span>
+                  <span class="result-tag">데이터 분석</span>
+                  <span class="result-tag">AI</span>
+                </div>
+              </div>
+            </div>
+            <div class="match-right">
+              <img src="./favicon.png" alt="Chronote match" class="match-image" />
+            </div>
+          </div>
+        </section>
+
+        <section class="app-page hidden" id="page-chat">
+          <div class="toolbar">
+            <div>
+              <h1 class="section-title">채팅방</h1>
+              <p class="section-desc">ChatRoomPage.js와 chatroom.scss의 버블 구조를 기준으로 만든 목데이터 화면입니다.</p>
+            </div>
+          </div>
+
+          <div class="chatroom-container card" style="box-shadow:none;">
+            <div class="chatroom-header">🗨️ 채팅방: AI 실험실 02 (room-12)</div>
+            <div class="chatroom-messages" id="chatMessages">
+              <div class="chat-bubble other"><strong>minji</strong>벡터DB 비교해본 사람 있나요?</div>
+              <div class="chat-bubble other"><strong>hyun</strong>저는 추천 시스템 쪽으로 데이터 전처리 먼저 보고 있어요.</div>
+              <div class="chat-bubble own"><strong>bee_user</strong>저는 포트폴리오에 넣을 Chronote 데모 HTML부터 정리하는 중입니다.</div>
+            </div>
+            <div class="chatroom-input">
+              <input class="input-base" id="chatInput" type="text" placeholder="메시지를 입력하세요..." />
+              <button class="btn-primary" id="sendChatBtn">전송</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="app-page hidden" id="page-mypage">
+          <div class="toolbar">
+            <div>
+              <h1 class="section-title">Mypage</h1>
+              <p class="section-desc">Sidebar의 오늘 할 일 / 캘린더 / 분석 흐름을 한 화면으로 압축한 미리보기입니다.</p>
+            </div>
+          </div>
+
+          <div class="dashboard-grid">
+            <div class="panel card">
+              <h3>진행 중인 할 일</h3>
+              <ul class="todo-list">
+                <li class="todo-item">
+                  <div class="task-content"><span class="dot"></span><span class="task-text">JWT 인증 흐름 정리</span></div>
+                  <span class="status">진행중</span>
+                </li>
+                <li class="todo-item">
+                  <div class="task-content"><span class="dot"></span><span class="task-text">면접 대비 질문 10개 정리</span></div>
+                  <span class="status">일시정지</span>
+                </li>
+                <li class="todo-item">
+                  <div class="task-content"><span class="dot"></span><span class="task-text">크로노트 포트폴리오 설명 쓰기</span></div>
+                  <span class="status">완료</span>
+                </li>
+              </ul>
+            </div>
+            <div class="panel card">
+              <h3>학습 요약</h3>
+              <div style="display:grid;gap:12px;">
+                <div class="todo-item"><div class="task-content"><span class="dot"></span><span class="task-text">이번 주 완료한 Todo</span></div><span class="pill">7개</span></div>
+                <div class="todo-item"><div class="task-content"><span class="dot"></span><span class="task-text">집중 시간</span></div><span class="pill">310분</span></div>
+                <div class="todo-item"><div class="task-content"><span class="dot"></span><span class="task-text">매칭 참여 횟수</span></div><span class="pill">4회</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="app-page hidden" id="page-feedback">
+          <div class="toolbar">
+            <div>
+              <h1 class="section-title">AI 공부 피드백</h1>
+              <p class="section-desc">AiFeedback.js의 카드 통계 + 본문 피드백 구조를 기반으로 만든 정적 미리보기입니다.</p>
+            </div>
+            <div class="toolbar-right">
+              <button class="btn-primary" id="feedbackBtn" style="padding:14px 24px;">✨ 오늘의 피드백 받기</button>
+            </div>
+          </div>
+
+          <div class="stats-grid" id="statsGrid">
+            <div class="stat-card"><div class="icon">📝</div><div class="value" id="statTotal">8개</div><div class="label">전체 할 일</div></div>
+            <div class="stat-card"><div class="icon">✅</div><div class="value" id="statCompleted">6개</div><div class="label">완료</div></div>
+            <div class="stat-card"><div class="icon">📈</div><div class="value" id="statRate">75%</div><div class="label">완료율</div></div>
+            <div class="stat-card"><div class="icon">⏱</div><div class="value" id="statMinutes">310분</div><div class="label">총 공부시간</div></div>
+          </div>
+
+          <div class="feedback-box" id="feedbackBox">
+            <h4>오늘의 요약</h4>
+            <p>오늘은 할 일 완료율이 비교적 안정적이었습니다. 특히 포트폴리오 문서 정리와 면접 질문 정리를 병행한 점이 좋습니다.</p>
+            <h4>잘한 점</h4>
+            <p>• 기능 설명보다 문제 해결 경험을 먼저 말하려는 흐름이 잡혀 있습니다.</p>
+            <p>• To do와 채팅 흐름을 함께 정리해 프로젝트 전체 맥락을 놓치지 않았습니다.</p>
+            <h4>보완하면 좋은 점</h4>
+            <p>• 기술 스택을 나열하는 대신, 왜 그 기술을 선택했는지 한 문장씩 덧붙이면 전달력이 더 높아집니다.</p>
+            <p>• 실제 트러블슈팅 한 사례를 함께 말하면 포트폴리오 설득력이 더 올라갑니다.</p>
+          </div>
+        </section>
+      </main>
+    </div>
+  </section>
+
+  <script>
+    const screens = {
+      first: document.getElementById('screen-first'),
+      login: document.getElementById('screen-login'),
+      signup: document.getElementById('screen-signup'),
+      app: document.getElementById('screen-app'),
+    };
+
+    function openScreen(name) {
+      Object.entries(screens).forEach(([key, el]) => {
+        el.classList.toggle('hidden', key !== name);
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.querySelectorAll('[data-open]').forEach(btn => {
+      btn.addEventListener('click', () => openScreen(btn.dataset.open));
+    });
+
+    const pages = ['main', 'match', 'chat', 'mypage', 'feedback'];
+    function setPage(page) {
+      pages.forEach(name => {
+        document.getElementById('page-' + name).classList.toggle('hidden', name !== page);
+      });
+      document.querySelectorAll('[data-page]').forEach(item => {
+        item.classList.toggle('active', item.dataset.page === page);
+      });
+    }
+
+    document.querySelectorAll('[data-page]').forEach(item => {
+      item.addEventListener('click', (e) => {
+        e.preventDefault();
+        setPage(item.dataset.page);
+      });
+    });
+
+    document.getElementById('go-main-logo').addEventListener('click', (e) => {
+      e.preventDefault();
+      setPage('main');
+    });
+
+    const modeToggle = document.getElementById('modeToggle');
+    modeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('darkmode');
+      modeToggle.textContent = document.body.classList.contains('darkmode') ? '☀️ Light' : '🌙 Dark';
+    });
+
+    const addTodoBtn = document.getElementById('addTodoBtn');
+    const todoInput = document.getElementById('todoInput');
+    const mainTodoList = document.getElementById('mainTodoList');
+    addTodoBtn.addEventListener('click', () => {
+      const value = todoInput.value.trim();
+      if (!value) return;
+      const li = document.createElement('li');
+      li.textContent = value;
+      mainTodoList.prepend(li);
+      todoInput.value = '';
+    });
+    todoInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') addTodoBtn.click();
+    });
+
+    const matchSamples = [
+      {
+        keywords: ['파이썬', '데이터', '분석'],
+        title: '추천 결과 · AI 실험실 02',
+        copy: '데이터 분석, Python, 추천 시스템 키워드와 가까운 채팅방입니다. 기존 인원 12명이 참여 중입니다.',
+        tags: ['Python', '데이터 분석', 'AI']
+      },
+      {
+        keywords: ['리액트', '프론트', 'ui'],
+        title: '추천 결과 · 프론트 스터디 05',
+        copy: 'React와 UI 구현 주제 위주로 대화하는 방입니다. 포트폴리오 피드백 요청이 자주 올라옵니다.',
+        tags: ['React', 'UI', '포트폴리오']
+      },
+      {
+        keywords: ['스프링', '백엔드', 'jwt'],
+        title: '추천 결과 · 백엔드 취업 준비 03',
+        copy: 'Spring Boot, JWT, 보안, 면접 준비와 가까운 주제입니다. 최근 질문 공유가 활발합니다.',
+        tags: ['Spring', 'JWT', '면접']
+      }
+    ];
+
+    document.getElementById('matchBtn').addEventListener('click', () => {
+      const input = document.getElementById('matchInput').value.toLowerCase();
+      let selected = matchSamples[0];
+      for (const sample of matchSamples) {
+        if (sample.keywords.some(k => input.includes(k))) {
+          selected = sample;
+          break;
+        }
+      }
+      document.querySelector('#matchResult .result-title').textContent = selected.title;
+      document.getElementById('matchCopy').textContent = selected.copy;
+      document.getElementById('matchTags').innerHTML = selected.tags.map(t => `<span class="result-tag">${t}</span>`).join('');
+    });
+
+    const sendChatBtn = document.getElementById('sendChatBtn');
+    const chatInput = document.getElementById('chatInput');
+    const chatMessages = document.getElementById('chatMessages');
+    sendChatBtn.addEventListener('click', () => {
+      const value = chatInput.value.trim();
+      if (!value) return;
+      const div = document.createElement('div');
+      div.className = 'chat-bubble own';
+      div.innerHTML = '<strong>bee_user</strong>' + value;
+      chatMessages.appendChild(div);
+      chatInput.value = '';
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    });
+    chatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') sendChatBtn.click();
+    });
+
+    const feedbackVariants = [
+      {
+        total: '8개', completed: '6개', rate: '75%', minutes: '310분',
+        html: `
+          <h4>오늘의 요약</h4>
+          <p>오늘은 할 일 완료율이 비교적 안정적이었습니다. 특히 포트폴리오 문서 정리와 면접 질문 정리를 병행한 점이 좋습니다.</p>
+          <h4>잘한 점</h4>
+          <p>• 기능 설명보다 문제 해결 경험을 먼저 말하려는 흐름이 잡혀 있습니다.</p>
+          <p>• To do와 채팅 흐름을 함께 정리해 프로젝트 전체 맥락을 놓치지 않았습니다.</p>
+          <h4>보완하면 좋은 점</h4>
+          <p>• 기술 스택을 나열하는 대신, 왜 그 기술을 선택했는지 한 문장씩 덧붙이면 전달력이 더 높아집니다.</p>
+          <p>• 실제 트러블슈팅 한 사례를 함께 말하면 포트폴리오 설득력이 더 올라갑니다.</p>`
+      },
+      {
+        total: '10개', completed: '8개', rate: '80%', minutes: '365분',
+        html: `
+          <h4>오늘의 요약</h4>
+          <p>전반적으로 작업 분배가 좋았고, 문서화와 기능 구현을 균형 있게 가져갔습니다.</p>
+          <h4>잘한 점</h4>
+          <p>• 설명 문장이 짧고 명확해서 면접 답변 구조로 옮기기 좋습니다.</p>
+          <p>• 프로젝트 핵심 기능을 우선순위별로 정리한 점이 강점입니다.</p>
+          <h4>보완하면 좋은 점</h4>
+          <p>• 매칭 기능의 입력과 결과 예시를 한 세트로 묶어 보여주면 더 이해하기 쉽습니다.</p>
+          <p>• 사용자 관점에서 어떤 문제가 해결되는지도 함께 적어두면 더 좋습니다.</p>`
+      },
+      {
+        total: '7개', completed: '5개', rate: '71%', minutes: '280분',
+        html: `
+          <h4>오늘의 요약</h4>
+          <p>핵심 작업은 완료했지만, 세부 정리 단계에서 시간이 더 필요해 보입니다.</p>
+          <h4>잘한 점</h4>
+          <p>• 할 일, 채팅, 피드백 기능을 하나의 흐름으로 연결해서 생각하고 있습니다.</p>
+          <p>• 프로젝트를 실제 서비스처럼 설명하려는 방향성이 좋습니다.</p>
+          <h4>보완하면 좋은 점</h4>
+          <p>• README와 포트폴리오 소개 문구의 톤을 통일하면 전달력이 더 좋아집니다.</p>
+          <p>• 기능별 화면 캡처와 함께 결과 설명을 붙이면 신뢰도가 더 높아집니다.</p>`
+      }
+    ];
+
+    document.getElementById('feedbackBtn').addEventListener('click', () => {
+      const item = feedbackVariants[Math.floor(Math.random() * feedbackVariants.length)];
+      document.getElementById('statTotal').textContent = item.total;
+      document.getElementById('statCompleted').textContent = item.completed;
+      document.getElementById('statRate').textContent = item.rate;
+      document.getElementById('statMinutes').textContent = item.minutes;
+      document.getElementById('feedbackBox').innerHTML = item.html;
+    });
+  </script>
+</body>
+</html>
