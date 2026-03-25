@@ -8,6 +8,17 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
   <style>
+.nav-logo {
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #f8fafc;
+}
+
+.nav-logo span {
+  color: #637cf6;
+  margin: 0 0.18rem;
+}
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
@@ -206,6 +217,19 @@
     .project-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
     .project-icon.blue { background: var(--accent-light); }
     .project-icon.violet { background: var(--violet-light); }
+    .project-icon.itpt-logo-box,
+    .project-icon.chronote-logo-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 6px;
+    }
+    .project-logo-img,
+    .chronote-logo-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
     .project-status { font-family: 'DM Mono', monospace; font-size: 0.7rem; padding: 4px 10px; border-radius: 100px; background: var(--green-light); color: var(--green); }
     .project-card h3 { font-family: 'Sora', sans-serif; font-size: 1.25rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 6px; }
     .project-en { font-family: 'DM Mono', monospace; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 14px; }
@@ -284,7 +308,7 @@
 <!-- NAV -->
 <nav>
   <div class="nav-inner">
-    <div class="nav-logo">지석<span>.</span>dev</div>
+    <div class="nav-logo">JiSeok<span>/</span>Dev</div>
     <ul class="nav-links">
       <li><a href="#skills">Skills</a></li>
       <li><a href="#projects">Projects</a></li>
@@ -352,17 +376,16 @@
 
     <div class="skills-grid">
       <div class="skill-category">
-        <h3>⚙️ Backend</h3>
+        <h3>Backend</h3>
         <div class="skill-list">
           <span class="skill-item">Java 17</span>
           <span class="skill-item">Spring Boot 3</span>
           <span class="skill-item">Spring Security</span>
           <span class="skill-item">JPA / Hibernate</span>
-          <span class="skill-item">Node.js / Express</span>
         </div>
       </div>
       <div class="skill-category">
-        <h3>🗄️ Database & Infra</h3>
+        <h3>Database & Infra</h3>
         <div class="skill-list">
           <span class="skill-item">MySQL 8.0</span>
           <span class="skill-item">MongoDB</span>
@@ -371,7 +394,7 @@
         </div>
       </div>
       <div class="skill-category">
-        <h3>🤖 Auth & AI Integration</h3>
+        <h3>Auth & AI Integration</h3>
         <div class="skill-list">
           <span class="skill-item">JWT 인증</span>
           <span class="skill-item">OAuth 2.0</span>
@@ -388,12 +411,11 @@
       <span class="tag tag-blue">JPA</span>
       <span class="tag tag-blue">JWT</span>
       <span class="tag tag-blue">OAuth 2.0</span>
-      <span class="tag tag-violet">Node.js</span>
       <span class="tag tag-green">MySQL</span>
       <span class="tag tag-green">Docker</span>
       <span class="tag tag-green">AWS EC2</span>
       <span class="tag tag-green">MongoDB</span>
-      <span class="tag tag-orange">GPT-4o-mini</span>
+      <span class="tag tag-orange">OpenAI API</span>
       <span class="tag tag-orange">Clova STT</span>
       <span class="tag tag-orange">FastAPI</span>
       <span class="tag tag-red">Python</span>
@@ -410,7 +432,9 @@
     <div class="projects-grid">
       <div class="project-card">
         <div class="project-header">
-          <div class="project-icon blue">🎤</div>
+          <div class="project-icon itpt-logo-box">
+            <img src="./itpt-demo/ITPT_logo.png" alt="ITPT 로고" class="project-logo-img">
+          </div>
           <span class="project-status">✓ 개발중</span>
         </div>
         <h3>ITPT</h3>
@@ -441,14 +465,16 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
             GitHub
           </a>
-          <a href="#" class="link-btn link-btn-outline">🔗 Live Demo</a>
+          <a href="#" class="link-btn link-btn-outline">🔗 Demo(준비중)</a>
         </div>
       </div>
 
       <div class="project-card">
         <div class="project-header">
-          <div class="project-icon violet">📚</div>
-          <span class="project-status" style="background:var(--orange-light);color:var(--orange)">⚡ 개발중</span>
+          <div class="project-icon chronote-logo-box">
+            <img src="./chronote-demo/favicon2.png" alt="Chronote 로고" class="chronote-logo-img">
+          </div>
+          <span class="project-status" style="background:var(--orange-light);color:var(--orange)">⚡ Demo</span>
         </div>
         <h3>Chronote</h3>
         <p class="project-en">AI-based Learning Management Platform</p>
@@ -458,7 +484,7 @@
           <li>실시간 그룹 채팅, 개인 학습 기록 관리</li>
           <li>타이머 / 투두 시스템 + 랭킹 보드</li>
           <li>학습 통계 데이터 시각화 대시보드</li>
-          <li>Node.js/Express 백엔드 → Java/Spring Boot 마이그레이션 예정</li>
+          <li>Node.js/Express 백엔드 → Java/Spring Boot 마이그레이션</li>
         </ul>
         <div class="project-tech">
           <span class="tech-tag">Node.js</span>
