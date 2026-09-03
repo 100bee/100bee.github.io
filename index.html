@@ -1,1244 +1,158 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>지석 | Backend Developer</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#fafbfe">
+  <meta name="description" content="백엔드 개발자 정지석의 포트폴리오. Java와 Spring Boot를 중심으로 ITPT, Chronote의 설계부터 AI 연동과 배포까지 소개합니다.">
+  <title>정지석 — Backend Developer</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b0c0d'/%3E%3Ctext x='12' y='44' font-family='Arial' font-weight='700' font-size='33' fill='%23f0f0ed'%3EJS%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
-
-  <style>
-    .nav-logo {
-      font-size: 1.05rem;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      color: #f8fafc;
-    }
-
-    .nav-logo span {
-      color: #637cf6;
-      margin: 0 0.18rem;
-    }
-
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    :root {
-      --bg: #F7F8FC;
-      --surface: #FFFFFF;
-      --surface2: #F0F2F8;
-      --border: #E4E8F0;
-      --text-primary: #0F1623;
-      --text-secondary: #4B5778;
-      --text-muted: #8C96B0;
-      --accent: #2563EB;
-      --accent-light: #EFF4FF;
-      --accent-mid: #93B4FD;
-      --violet: #7C3AED;
-      --violet-light: #F3EEFF;
-      --green: #059669;
-      --green-light: #ECFDF5;
-      --orange: #D97706;
-      --orange-light: #FFFBEB;
-      --red: #DC2626;
-      --red-light: #FEF2F2;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      font-family: 'Noto Sans KR', sans-serif;
-      background: var(--bg);
-      color: var(--text-primary);
-      line-height: 1.6;
-      overflow-x: hidden;
-    }
-
-    /* NAV */
-    nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 100;
-      background: rgba(247,248,252,0.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .nav-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 2rem;
-      height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .nav-logo {
-      font-family: 'Sora', sans-serif;
-      font-weight: 700;
-      font-size: 1rem;
-      color: var(--text-primary);
-      letter-spacing: -0.02em;
-    }
-
-    .nav-logo span {
-      color: var(--accent);
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 2rem;
-      list-style: none;
-    }
-
-    .nav-links a {
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: var(--text-secondary);
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-
-    .nav-links a:hover {
-      color: var(--accent);
-    }
-
-    /* HERO */
-    .hero {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      padding: 100px 2rem 60px;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-
-    .hero-content {
-      max-width: 640px;
-    }
-
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--accent-light);
-      border: 1px solid var(--accent-mid);
-      color: var(--accent);
-      font-family: 'DM Mono', monospace;
-      font-size: 0.75rem;
-      padding: 4px 12px;
-      border-radius: 100px;
-      margin-bottom: 1.5rem;
-    }
-
-    .hero-badge::before {
-      content: '●';
-      font-size: 0.5rem;
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
-
-    .hero h1 {
-      font-family: 'Sora', sans-serif;
-      font-size: clamp(2.5rem, 6vw, 4rem);
-      font-weight: 800;
-      line-height: 1.1;
-      letter-spacing: -0.04em;
-      margin-bottom: 0.5rem;
-    }
-
-    .hero h1 .name-accent {
-      color: var(--accent);
-    }
-
-    .hero-sub {
-      font-family: 'Sora', sans-serif;
-      font-size: clamp(1.1rem, 2.5vw, 1.5rem);
-      font-weight: 400;
-      color: var(--text-secondary);
-      margin-bottom: 1.5rem;
-    }
-
-    .hero-desc {
-      font-size: 1rem;
-      color: var(--text-secondary);
-      line-height: 1.8;
-      margin-bottom: 2.5rem;
-    }
-
-    .hero-actions {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-
-    .btn-primary {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--accent);
-      color: #fff;
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      text-decoration: none;
-      transition: all 0.2s;
-      box-shadow: 0 2px 12px rgba(37,99,235,0.25);
-    }
-
-    .btn-primary:hover {
-      background: #1D4ED8;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 20px rgba(37,99,235,0.35);
-    }
-
-    .btn-secondary {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--surface);
-      color: var(--text-primary);
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      text-decoration: none;
-      border: 1px solid var(--border);
-      transition: all 0.2s;
-    }
-
-    .btn-secondary:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-      transform: translateY(-1px);
-    }
-
-    .hero-visual {
-      flex: 1;
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-    }
-
-    .hero-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 24px;
-      width: 280px;
-      box-shadow: 0 8px 40px rgba(15,22,35,0.06);
-    }
-
-    .hero-card-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 16px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .avatar {
-      width: 44px;
-      height: 44px;
-      background: linear-gradient(135deg, var(--accent), var(--violet));
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      font-family: 'Sora', sans-serif;
-      font-weight: 700;
-      font-size: 1.1rem;
-    }
-
-    .hero-card-name {
-      font-weight: 700;
-      font-size: 0.95rem;
-    }
-
-    .hero-card-role {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-    }
-
-    .stat-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 10px;
-    }
-
-    .stat-item {
-      text-align: center;
-    }
-
-    .stat-num {
-      font-family: 'Sora', sans-serif;
-      font-weight: 700;
-      font-size: 1.2rem;
-      color: var(--accent);
-    }
-
-    .stat-label {
-      font-size: 0.7rem;
-      color: var(--text-muted);
-    }
-
-    .mini-stack {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-      margin-top: 14px;
-    }
-
-    .mini-tag {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.65rem;
-      padding: 2px 8px;
-      border-radius: 4px;
-      background: var(--surface2);
-      color: var(--text-secondary);
-    }
-
-    /* SECTION COMMONS */
-    section {
-      padding: 80px 2rem;
-    }
-
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-
-    .section-label {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.75rem;
-      color: var(--accent);
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      margin-bottom: 0.75rem;
-    }
-
-    .section-title {
-      font-family: 'Sora', sans-serif;
-      font-size: clamp(1.6rem, 3vw, 2.2rem);
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      color: var(--text-primary);
-      margin-bottom: 0.75rem;
-    }
-
-    .section-desc {
-      color: var(--text-secondary);
-      font-size: 0.95rem;
-      max-width: 540px;
-      line-height: 1.8;
-      margin-bottom: 3rem;
-    }
-
-    /* SKILLS */
-    #skills {
-      background: var(--surface);
-    }
-
-    .skills-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 2.5rem;
-    }
-
-    .skill-category {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px;
-    }
-
-    .skill-category h3 {
-      font-family: 'Sora', sans-serif;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 16px;
-    }
-
-    .skill-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .skill-item {
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: var(--text-primary);
-      background: var(--surface);
-      border: 1px solid var(--border);
-      padding: 6px 14px;
-      border-radius: 6px;
-    }
-
-    .tag-cloud {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .tag {
-      font-size: 0.8rem;
-      font-weight: 500;
-      padding: 6px 14px;
-      border-radius: 6px;
-      border: 1px solid;
-    }
-
-    .tag-blue {
-      background: var(--accent-light);
-      color: var(--accent);
-      border-color: var(--accent-mid);
-    }
-
-    .tag-violet {
-      background: var(--violet-light);
-      color: var(--violet);
-      border-color: #C4B5FD;
-    }
-
-    .tag-green {
-      background: var(--green-light);
-      color: var(--green);
-      border-color: #6EE7B7;
-    }
-
-    .tag-orange {
-      background: var(--orange-light);
-      color: var(--orange);
-      border-color: #FCD34D;
-    }
-
-    .tag-red {
-      background: var(--red-light);
-      color: var(--red);
-      border-color: #FCA5A5;
-    }
-
-    /* PROJECTS */
-    #projects {
-      background: var(--bg);
-    }
-
-    .projects-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
-      gap: 1.5rem;
-    }
-
-    @media(max-width: 520px) {
-      .projects-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .project-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 32px;
-      transition: all 0.25s;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .project-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, var(--accent), var(--violet));
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform 0.3s ease;
-    }
-
-    .project-card:hover {
-      box-shadow: 0 8px 40px rgba(15,22,35,0.1);
-      transform: translateY(-3px);
-    }
-
-    .project-card:hover::before {
-      transform: scaleX(1);
-    }
-
-    .project-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      margin-bottom: 16px;
-    }
-
-    .project-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.4rem;
-    }
-
-    .project-icon.blue {
-      background: var(--accent-light);
-    }
-
-    .project-icon.violet {
-      background: var(--violet-light);
-    }
-
-    .project-icon.itpt-logo-box,
-    .project-icon.chronote-logo-box {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      padding: 6px;
-    }
-
-    .project-logo-img,
-    .chronote-logo-img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      display: block;
-    }
-
-    .project-status {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.7rem;
-      padding: 4px 10px;
-      border-radius: 100px;
-      background: var(--green-light);
-      color: var(--green);
-    }
-
-    .project-card h3 {
-      font-family: 'Sora', sans-serif;
-      font-size: 1.25rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      margin-bottom: 6px;
-    }
-
-    .project-en {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      margin-bottom: 14px;
-    }
-
-    .project-desc {
-      font-size: 0.9rem;
-      color: var(--text-secondary);
-      line-height: 1.7;
-      margin-bottom: 20px;
-    }
-
-    .project-features {
-      margin-bottom: 20px;
-      padding: 16px;
-      background: var(--bg);
-      border-radius: 8px;
-    }
-
-    .project-features li {
-      font-size: 0.82rem;
-      color: var(--text-secondary);
-      margin-bottom: 6px;
-      padding-left: 1.2em;
-      position: relative;
-      list-style: none;
-    }
-
-    .project-features li::before {
-      content: '→';
-      position: absolute;
-      left: 0;
-      color: var(--accent);
-      font-size: 0.75rem;
-    }
-
-    .project-tech {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 20px;
-    }
-
-    .tech-tag {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.72rem;
-      padding: 4px 10px;
-      background: var(--surface2);
-      color: var(--text-secondary);
-      border-radius: 4px;
-      border: 1px solid var(--border);
-    }
-
-    .project-links {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .link-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      padding: 8px 16px;
-      border-radius: 6px;
-      text-decoration: none;
-      transition: all 0.2s;
-    }
-
-    .link-btn-primary {
-      background: var(--accent);
-      color: #fff;
-    }
-
-    .link-btn-primary:hover {
-      background: #1D4ED8;
-    }
-
-    .link-btn-outline {
-      background: transparent;
-      color: var(--text-secondary);
-      border: 1px solid var(--border);
-    }
-
-    .link-btn-outline:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-
-    /* TIMELINE */
-    #timeline {
-      background: var(--surface);
-    }
-
-    .timeline {
-      position: relative;
-      padding-left: 2rem;
-    }
-
-    .timeline::before {
-      content: '';
-      position: absolute;
-      left: 8px;
-      top: 0;
-      bottom: 0;
-      width: 1px;
-      background: var(--border);
-    }
-
-    .tl-item {
-      position: relative;
-      margin-bottom: 2.5rem;
-    }
-
-    .tl-dot {
-      position: absolute;
-      left: -2.35rem;
-      top: 4px;
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      border: 2px solid var(--accent);
-      background: var(--surface);
-      transition: all 0.3s;
-    }
-
-    .tl-item:hover .tl-dot {
-      background: var(--accent);
-    }
-
-    .tl-date {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.75rem;
-      color: var(--accent);
-      margin-bottom: 4px;
-    }
-
-    .tl-title {
-      font-family: 'Sora', sans-serif;
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin-bottom: 2px;
-    }
-
-    .tl-subtitle {
-      font-size: 0.85rem;
-      color: var(--text-secondary);
-      margin-bottom: 6px;
-    }
-
-    .tl-badges {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .tl-badge {
-      font-size: 0.75rem;
-      padding: 3px 10px;
-      background: var(--accent-light);
-      color: var(--accent);
-      border-radius: 100px;
-    }
-
-    .tl-badge.violet {
-      background: var(--violet-light);
-      color: var(--violet);
-    }
-
-    .tl-badge.green {
-      background: var(--green-light);
-      color: var(--green);
-    }
-
-    .timeline-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 3rem;
-    }
-
-    @media(max-width: 680px) {
-      .timeline-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .tl-col-title {
-      font-family: 'Sora', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 2rem;
-    }
-
-    /* CONTACT */
-    #contact {
-      background: var(--text-primary);
-      color: #fff;
-    }
-
-    #contact .section-title {
-      color: #fff;
-    }
-
-    #contact .section-desc {
-      color: rgba(255,255,255,0.6);
-    }
-
-    .contact-grid {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-
-    .contact-card {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 10px;
-      padding: 16px 20px;
-      text-decoration: none;
-      color: rgba(255,255,255,0.85);
-      font-size: 0.9rem;
-      font-weight: 500;
-      transition: all 0.2s;
-      flex: 1;
-      min-width: 200px;
-    }
-
-    .contact-card:hover {
-      background: rgba(255,255,255,0.1);
-      border-color: rgba(255,255,255,0.2);
-      transform: translateY(-2px);
-    }
-
-    .contact-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-    }
-
-    .ci-github {
-      background: rgba(255,255,255,0.1);
-    }
-
-    .ci-email {
-      background: rgba(37,99,235,0.4);
-    }
-
-    footer {
-      background: var(--text-primary);
-      padding: 24px 2rem;
-      border-top: 1px solid rgba(255,255,255,0.08);
-      text-align: center;
-    }
-
-    footer p {
-      font-size: 0.8rem;
-      color: rgba(255,255,255,0.3);
-    }
-
-    footer span {
-      color: rgba(255,255,255,0.5);
-    }
-
-    @media(max-width: 860px) {
-      .hero {
-        flex-direction: column;
-        gap: 3rem;
-        text-align: center;
-      }
-
-      .hero-content {
-        max-width: 100%;
-      }
-
-      .hero-actions {
-        justify-content: center;
-      }
-
-      .hero-visual {
-        justify-content: center;
-      }
-
-      .hero-card {
-        width: 260px;
-      }
-    }
-
-    @media(max-width: 600px) {
-      .nav-links {
-        display: none;
-      }
-    }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+KR:wght@400;500;600;700&family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
 </head>
-
 <body>
+  <a class="skip-link" href="#main">본문으로 건너뛰기</a>
+  <header class="site-header">
+    <nav class="nav container" aria-label="메인 메뉴">
+      <a class="wordmark" href="#home" aria-label="정지석 포트폴리오 처음으로">Jiseok Jung<span class="wordmark-dot">.</span></a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="nav-links" hidden><span class="menu-label">Menu</span><span class="menu-icon" aria-hidden="true"></span></button>
+      <div class="nav-links" id="nav-links">
+        <a href="#about">About</a>
+        <a href="#projects">Projects <span class="nav-count">02</span></a>
+        <a href="#skills">Skills</a>
+        <a href="#timeline">Journey</a>
+        <a href="#contact" class="nav-contact">Contact <span aria-hidden="true">↗</span></a>
+      </div>
+    </nav>
+  </header>
 
-  <!-- NAV -->
-  <nav>
-    <div class="nav-inner">
-      <div class="nav-logo">JiSeok<span>/</span>Dev</div>
-      <ul class="nav-links">
-        <li><a href="#skills">Skills</a></li>
-        <li><a href="#projects">Projects</a></li>
-        <li><a href="#timeline">Timeline</a></li>
-        <li><a href="#contact">Contact</a></li>
-      </ul>
-    </div>
-  </nav>
-
-  <!-- HERO -->
-  <section style="padding-top:0">
-    <div class="hero">
-      <div class="hero-content">
-        <div class="hero-badge">Backend Developer · 포트폴리오</div>
-        <h1>안녕하세요,<br><span class="name-accent">정지석</span>입니다.</h1>
-        <p class="hero-sub">Backend Engineer · Java · Spring Boot</p>
-        <p class="hero-desc">
-          서버사이드 개발에 깊이 있는 관심을 가진 백엔드 지향 개발자입니다.<br>
-          Spring Boot와 Java를 중심으로 확장 가능하고 신뢰할 수 있는 시스템을 설계합니다.
-        </p>
-
-        <div class="hero-actions">
-          <a href="#projects" class="btn-primary">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <rect x="3" y="3" width="7" height="7" rx="1"/>
-              <rect x="14" y="3" width="7" height="7" rx="1"/>
-              <rect x="3" y="14" width="7" height="7" rx="1"/>
-              <rect x="14" y="14" width="7" height="7" rx="1"/>
-            </svg>
-            프로젝트 보기
-          </a>
-
-          <a href="https://github.com/100bee" target="_blank" rel="noopener noreferrer" class="btn-secondary">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-            </svg>
-            GitHub
-          </a>
+  <main id="main">
+    <section class="hero" id="home" aria-labelledby="hero-title">
+      <div class="hero-art" aria-hidden="true">
+        <svg class="orbit-fallback" viewBox="0 0 700 700" fill="none"><g stroke="#4b73ad" stroke-width=".6"><circle cx="350" cy="350" r="205"/><ellipse cx="350" cy="350" rx="205" ry="65" transform="rotate(-30 350 350)"/><ellipse cx="350" cy="350" rx="205" ry="65" transform="rotate(55 350 350)"/><ellipse cx="350" cy="350" rx="205" ry="115" transform="rotate(-65 350 350)"/><path d="M350 165 505 350 350 535 195 350Z M350 165V535 M195 350H505"/></g></svg>
+        <canvas id="hero-canvas"></canvas>
+      </div>
+      <div class="container hero-inner">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> JISEOK JUNG · PORTFOLIO</p>
+          <h1 id="hero-title">Backend<br><span class="title-secondary">Developer<span class="title-dot">.</span></span></h1>
+          <div class="hero-intro">
+            <p>더 나은 경험을 위한<br>견고한 시스템을 만듭니다.</p>
+            <span class="hero-name">정지석 <span>Java & Spring Boot</span></span>
+          </div>
+          <a class="text-link hero-link" href="#projects">프로젝트 살펴보기 <span class="round-arrow" aria-hidden="true">↘</span></a>
         </div>
       </div>
+      <div class="hero-bottom container">
+        <span class="mono">JAVA / SPRING BOOT / BACKEND</span>
+        <a class="scroll-link mono" href="#about">SCROLL TO EXPLORE <span aria-hidden="true">↓</span></a>
+      </div>
+    </section>
 
-      <div class="hero-visual">
-        <div class="hero-card">
-          <div class="hero-card-header">
-            <div class="avatar">지</div>
-            <div>
-              <div class="hero-card-name">정지석</div>
-              <div class="hero-card-role">Backend Developer</div>
-            </div>
+    <section class="section about-section" id="about" aria-labelledby="about-title">
+      <div class="container section-grid">
+        <p class="section-index">[ 01 — ABOUT ]</p>
+        <div class="about-content">
+          <h2 id="about-title" class="statement">보이지 않는 곳에서,<br><span>흔들림 없이.</span></h2>
+          <div class="about-description">
+            <p>안녕하세요, 백엔드 개발자 정지석입니다.<br>Java와 Spring Boot를 중심으로 확장 가능하고<br class="desktop-break"> 신뢰할 수 있는 시스템을 설계합니다.</p>
+            <p>API 설계부터 인증, 데이터베이스, AI 서비스 연동과 배포까지.<br class="desktop-break"> 서비스가 동작하는 전체 흐름을 이해하고, 사용자에게<br class="desktop-break"> 닿는 경험까지 고민하며 개발합니다.</p>
           </div>
-
-          <div class="stat-row">
-            <div class="stat-item">
-              <div class="stat-num">2</div>
-              <div class="stat-label">Projects</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-num">3+</div>
-              <div class="stat-label">Years Study</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-num">10+</div>
-              <div class="stat-label">Technologies</div>
-            </div>
-          </div>
-
-          <div class="mini-stack">
-            <span class="mini-tag">Java</span>
-            <span class="mini-tag">Spring Boot</span>
-            <span class="mini-tag">MySQL</span>
-            <span class="mini-tag">JPA</span>
-            <span class="mini-tag">Docker</span>
-            <span class="mini-tag">AWS EC2</span>
+          <a class="text-link subtle-link" href="https://github.com/100bee" target="_blank" rel="noopener noreferrer">GitHub에서 더 알아보기 <span aria-hidden="true">↗</span></a>
+          <div class="about-facts">
+            <div><span class="mono fact-label">FOCUS</span><span>Backend Engineering</span></div>
+            <div><span class="mono fact-label">EDUCATION</span><span>단국대학교 소프트웨어학과</span></div>
+            <div><span class="mono fact-label">SELECTED WORK</span><span>ITPT & Chronote</span></div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- SKILLS -->
-  <section id="skills">
-    <div class="container">
-      <div class="section-label">Technical Skills</div>
-      <h2 class="section-title">기술 스택 & 역량</h2>
-      <p class="section-desc">
-        백엔드를 중심으로 풀스택 개발 경험을 쌓았습니다. 특히 Java/Spring 생태계와 RESTful API 설계에 강점이 있습니다.
-      </p>
-
-      <div class="skills-grid">
-        <div class="skill-category">
-          <h3>Backend</h3>
-          <div class="skill-list">
-            <span class="skill-item">Java 17</span>
-            <span class="skill-item">Spring Boot 3</span>
-            <span class="skill-item">Spring Security</span>
-            <span class="skill-item">JPA / Hibernate</span>
-          </div>
+    <section class="section projects-section" id="projects" aria-labelledby="projects-title">
+      <div class="container">
+        <div class="section-heading">
+          <div><p class="section-index">[ 02 — SELECTED WORK ]</p><h2 id="projects-title">Selected projects<span class="heading-count">(02)</span></h2></div>
+          <p class="section-caption">아이디어에서 실제 서비스까지.<br>직접 기획하고 개발한 프로젝트입니다.</p>
         </div>
-
-        <div class="skill-category">
-          <h3>Database & Infra</h3>
-          <div class="skill-list">
-            <span class="skill-item">MySQL 8.0</span>
-            <span class="skill-item">MongoDB</span>
-            <span class="skill-item">Docker / Compose</span>
-            <span class="skill-item">AWS EC2</span>
+        <article class="project project-itpt">
+          <div class="project-visual itpt-visual">
+            <div class="visual-topline mono"><span>01 / ITPT</span><span>INTERVIEW × AI</span></div>
+            <div class="project-brand"><img class="itpt-logo" src="./itpt-demo/ITPT_logo.png" width="875" height="350" alt="ITPT" loading="lazy"><p>Speak. Learn. Grow.</p></div>
+            <div class="visual-bottomline mono"><span>IT INTERVIEW PRACTICE TOOL</span><span aria-hidden="true">↗</span></div>
           </div>
-        </div>
-
-        <div class="skill-category">
-          <h3>Auth & AI Integration</h3>
-          <div class="skill-list">
-            <span class="skill-item">JWT 인증</span>
-            <span class="skill-item">OAuth 2.0</span>
-            <span class="skill-item">OpenAI GPT API</span>
-            <span class="skill-item">Clova Speech STT</span>
+          <div class="project-content">
+            <div class="project-meta"><span class="mono">2025 — 2026</span><span class="project-status"><span class="status-dot" aria-hidden="true"></span>Live project</span></div>
+            <h3>ITPT<span class="project-period">.</span></h3>
+            <p class="project-subtitle">AI 기반 CS 면접 연습 플랫폼</p>
+            <p class="project-description">질문에 말로 답하면 음성을 텍스트로 변환하고, AI가 채점과 피드백, 꼬리질문을 제공합니다. 면접 연습부터 약점 분석까지 하나의 흐름으로 연결했습니다.</p>
+            <ul class="project-features">
+              <li>CS 카테고리별 면접 세션과 Clova STT · OpenAI 연동</li>
+              <li>카테고리별 약점 분석 및 통계 대시보드</li>
+              <li>Google · Kakao · Naver 소셜 로그인과 JWT 인증</li>
+              <li>문제 은행 · 유저 · 면접 기록 관리자 기능</li>
+              <li>Docker Compose 기반 개발 환경과 AWS EC2 배포</li>
+            </ul>
+            <ul class="tech-tags" aria-label="ITPT 기술 스택"><li>Java 17</li><li>Spring Boot 3</li><li>Spring Security</li><li>JPA</li><li>MySQL</li><li>JWT · OAuth 2.0</li><li>OpenAI · Clova STT</li><li>Docker</li></ul>
+            <div class="project-links"><a class="text-link" href="https://itptapp.com/" target="_blank" rel="noopener noreferrer">서비스 방문 <span aria-hidden="true">↗</span></a><a class="text-link muted-link" href="https://github.com/CSInterviewProject/ITPT_PUBLIC" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a></div>
           </div>
+        </article>
+        <article class="project project-chronote">
+          <div class="project-visual chronote-visual">
+            <div class="visual-topline mono"><span>02 / CHRONOTE</span><span>LEARNING × AI</span></div>
+            <div class="project-brand chronote-brand"><img src="./chronote-demo/favicon2.png" width="1024" height="1024" alt="Chronote 로고" loading="lazy"><span>chronote</span><p>Make your time matter.</p></div>
+            <div class="visual-bottomline mono"><span>AI LEARNING MANAGEMENT</span><span aria-hidden="true">↗</span></div>
+          </div>
+          <div class="project-content">
+            <div class="project-meta"><span class="mono">2025</span><span class="project-status"><span class="status-dot demo-dot" aria-hidden="true"></span>UI preview</span></div>
+            <h3>Chronote<span class="project-period">.</span></h3>
+            <p class="project-subtitle">함께 성장하는 AI 학습 관리 플랫폼</p>
+            <p class="project-description">관심사가 비슷한 사람들을 스터디로 연결하고, 학습 시간과 기록을 한곳에 모았습니다. 함께 공부하고 꾸준히 성장하는 경험을 만듭니다.</p>
+            <ul class="project-features">
+              <li>FastAPI 기반 AI 관심사 매칭과 스터디 연결</li>
+              <li>실시간 그룹 채팅과 개인 학습 기록 관리</li>
+              <li>타이머 · 투두 · 랭킹 및 학습 통계 시각화</li>
+              <li>Node.js / Express에서 Java / Spring Boot로 마이그레이션</li>
+            </ul>
+            <ul class="tech-tags" aria-label="Chronote 기술 스택"><li>Node.js</li><li>Express</li><li>FastAPI</li><li>Python</li><li>MySQL</li><li>MongoDB</li><li>React</li><li>SCSS</li></ul>
+            <div class="project-links"><a class="text-link" href="./chronote-demo/" target="_blank" rel="noopener noreferrer">UI 미리보기 <span aria-hidden="true">↗</span></a><a class="text-link muted-link" href="https://github.com/100bee/chronote" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section skills-section" id="skills" aria-labelledby="skills-title">
+      <div class="container section-grid">
+        <div><p class="section-index">[ 03 — TOOLKIT ]</p><h2 id="skills-title">Built with.</h2><p class="section-caption">아이디어를 구현하는 기술들.</p></div>
+        <div class="skills-list">
+          <div class="skill-row"><span class="skill-number mono">01</span><div><h3>Backend</h3><p>Java 17 · Spring Boot 3 · Spring Security<br>JPA / Hibernate · RESTful API</p></div><span class="skill-symbol" aria-hidden="true">{ }</span></div>
+          <div class="skill-row"><span class="skill-number mono">02</span><div><h3>Database & Infrastructure</h3><p>MySQL 8.0 · MongoDB<br>Docker / Compose · AWS EC2</p></div><span class="skill-symbol" aria-hidden="true">≋</span></div>
+          <div class="skill-row"><span class="skill-number mono">03</span><div><h3>Auth & AI Integration</h3><p>JWT · OAuth 2.0 · OpenAI API<br>Clova Speech STT · FastAPI · Python</p></div><span class="skill-symbol" aria-hidden="true">↗</span></div>
         </div>
       </div>
+    </section>
 
-      <div class="tag-cloud">
-        <span class="tag tag-blue">Java</span>
-        <span class="tag tag-blue">Spring Boot</span>
-        <span class="tag tag-blue">Spring Security</span>
-        <span class="tag tag-blue">JPA</span>
-        <span class="tag tag-blue">JWT</span>
-        <span class="tag tag-blue">OAuth 2.0</span>
-        <span class="tag tag-green">MySQL</span>
-        <span class="tag tag-green">Docker</span>
-        <span class="tag tag-green">AWS EC2</span>
-        <span class="tag tag-green">MongoDB</span>
-        <span class="tag tag-orange">OpenAI API</span>
-        <span class="tag tag-orange">Clova STT</span>
-        <span class="tag tag-orange">FastAPI</span>
-        <span class="tag tag-red">Python</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- PROJECTS -->
-  <section id="projects">
-    <div class="container">
-      <div class="section-label">Projects</div>
-      <h2 class="section-title">주요 프로젝트</h2>
-      <p class="section-desc">
-        직접 기획하고 개발한 서비스입니다. 백엔드 아키텍처 설계부터 AI 연동, 배포까지 end-to-end로 경험했습니다.
-      </p>
-
-      <div class="projects-grid">
-        <!-- ITPT -->
-        <div class="project-card">
-          <div class="project-header">
-            <div class="project-icon itpt-logo-box">
-              <img src="./itpt-demo/ITPT_logo.png" alt="ITPT 로고" class="project-logo-img">
-            </div>
-            <span class="project-status">✓ 배포 완료</span>
-          </div>
-
-          <h3>ITPT</h3>
-          <p class="project-en">IT Interview Practice Tool</p>
-          <p class="project-desc">
-            개발자를 위한 CS 기술 면접 준비 플랫폼. 음성으로 답변하면 STT로 변환 후 GPT-4o-mini가 채점·피드백·꼬리질문을 자동 생성합니다.
-          </p>
-
-          <ul class="project-features">
-            <li>OS · DB · Java · Spring · Network 카테고리별 면접 세션</li>
-            <li>STT(Clova Speech) + AI 채점 + 꼬리 질문 자동 생성</li>
-            <li>통계 대시보드 (카테고리별 약점 분석, Recharts 시각화)</li>
-            <li>관리자 페이지 (문제 은행 CRUD, 유저 관리, 면접 기록 조회)</li>
-            <li>Google · Kakao · Naver OAuth 2.0 소셜 로그인</li>
-            <li>Docker Compose 기반 로컬 개발, AWS EC2 배포</li>
-          </ul>
-
-          <div class="project-tech">
-            <span class="tech-tag">Spring Boot 3</span>
-            <span class="tech-tag">Java 17</span>
-            <span class="tech-tag">Spring Security</span>
-            <span class="tech-tag">JPA</span>
-            <span class="tech-tag">MySQL 8</span>
-            <span class="tech-tag">JWT</span>
-            <span class="tech-tag">OAuth 2.0</span>
-            <span class="tech-tag">GPT-4o-mini</span>
-            <span class="tech-tag">Clova STT</span>
-            <span class="tech-tag">Docker</span>
-          </div>
-
-          <div class="project-links">
-            <a
-              href="https://github.com/CSInterviewProject/ITPT_PUBLIC"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="link-btn link-btn-primary"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-              </svg>
-              GitHub
-            </a>
-
-            <a
-              href="https://itptapp.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="link-btn link-btn-outline"
-            >
-              🔗 ITPT 링크
-            </a>
-          </div>
-        </div>
-
-        <!-- Chronote -->
-        <div class="project-card">
-          <div class="project-header">
-            <div class="project-icon chronote-logo-box">
-              <img src="./chronote-demo/favicon2.png" alt="Chronote 로고" class="chronote-logo-img">
-            </div>
-            <span class="project-status" style="background:var(--orange-light);color:var(--orange)">⚡ Demo</span>
-          </div>
-
-          <h3>Chronote</h3>
-          <p class="project-en">AI-based Learning Management Platform</p>
-          <p class="project-desc">
-            AI 기반 학습 관리 플랫폼. 관심사 매칭으로 그룹 스터디를 연결하고, 타이머·투두·랭킹·학습 데이터 시각화로 꾸준한 학습을 지원합니다.
-          </p>
-
-          <ul class="project-features">
-            <li>AI 관심사 매칭으로 그룹 스터디 자동 연결 (FastAPI)</li>
-            <li>실시간 그룹 채팅, 개인 학습 기록 관리</li>
-            <li>타이머 / 투두 시스템 + 랭킹 보드</li>
-            <li>학습 통계 데이터 시각화 대시보드</li>
-            <li>Node.js/Express 백엔드 → Java/Spring Boot 마이그레이션</li>
-          </ul>
-
-          <div class="project-tech">
-            <span class="tech-tag">Node.js</span>
-            <span class="tech-tag">Express</span>
-            <span class="tech-tag">FastAPI</span>
-            <span class="tech-tag">Python</span>
-            <span class="tech-tag">MySQL</span>
-            <span class="tech-tag">MongoDB</span>
-            <span class="tech-tag">React</span>
-            <span class="tech-tag">SCSS</span>
-          </div>
-
-          <div class="project-links">
-            <a
-              href="https://github.com/100bee/chronote"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="link-btn link-btn-primary"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-              </svg>
-              GitHub
-            </a>
-
-            <a
-              href="./chronote-demo/"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="link-btn link-btn-outline"
-            >
-              🔗 UI Preview
-            </a>
-          </div>
+    <section class="section journey-section" id="timeline" aria-labelledby="journey-title">
+      <div class="container section-grid">
+        <div><p class="section-index">[ 04 — JOURNEY ]</p><h2 id="journey-title">Along the way.</h2><p class="section-caption">배우고, 만들고, 성장해 온 과정.</p></div>
+        <div class="journey-list">
+          <div class="journey-row"><span class="journey-date mono">2024.03 — 2026.08</span><div><span class="journey-type mono">EDUCATION</span><h3>단국대학교</h3><p>소프트웨어학과</p></div></div>
+          <div class="journey-row"><span class="journey-date mono">2025.12 — 2026.03</span><div><span class="journey-type mono">GRADUATION PROJECT</span><h3>ITPT</h3><p>CS 기술 면접 준비 플랫폼<br>Spring Boot · AI 연동 · 풀스택 개발</p></div></div>
+          <div class="journey-row"><span class="journey-date mono">2025.06 — 2025.08</span><div><span class="journey-type mono">TEAM PROJECT</span><h3>Chronote</h3><p>AI 기반 학습 관리 플랫폼<br>Node.js · FastAPI</p></div></div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- TIMELINE -->
-  <section id="timeline">
-    <div class="container">
-      <div class="section-label">Timeline</div>
-      <h2 class="section-title">경력 & 학력</h2>
-      <p class="section-desc">배움과 성장의 발자취입니다.</p>
-
-      <div class="timeline-grid">
-        <div>
-          <div class="tl-col-title">🎓 학력</div>
-          <div class="timeline">
-            <div class="tl-item">
-              <div class="tl-dot"></div>
-              <div class="tl-date">2024.03 — 2026.08</div>
-              <div class="tl-title">단국대학교</div>
-              <div class="tl-subtitle">소프트웨어학과</div>
-              <div class="tl-badges">
-                <span class="tl-badge">Software</span>
-                <span class="tl-badge violet">졸업프로젝트</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <div class="tl-col-title">💼 활동 & 프로젝트</div>
-          <div class="timeline">
-            <div class="tl-item">
-              <div class="tl-dot"></div>
-              <div class="tl-date">2025.12 — 2026.03</div>
-              <div class="tl-title">ITPT 개발</div>
-              <div class="tl-subtitle">CS 기술 면접 준비 플랫폼 (졸업 프로젝트)</div>
-              <div class="tl-badges">
-                <span class="tl-badge">Spring Boot</span>
-                <span class="tl-badge violet">AI 연동</span>
-                <span class="tl-badge green">풀스택</span>
-              </div>
-            </div>
-
-            <div class="tl-item">
-              <div class="tl-dot"></div>
-              <div class="tl-date">2025.06 — 2025.08</div>
-              <div class="tl-title">Chronote 개발</div>
-              <div class="tl-subtitle">AI 기반 학습 관리 플랫폼</div>
-              <div class="tl-badges">
-                <span class="tl-badge">Node.js</span>
-                <span class="tl-badge violet">FastAPI</span>
-                <span class="tl-badge green">팀 프로젝트</span>
-              </div>
-            </div>
-          </div>
-        </div>
+    <section class="contact-section" id="contact" aria-labelledby="contact-title">
+      <div class="container">
+        <p class="section-index">[ 05 — WHAT'S NEXT? ]</p>
+        <a class="contact-heading-link" href="mailto:wjdwltjr3939@naver.com"><h2 id="contact-title">Let’s build<br><span>something good.</span></h2><span class="contact-arrow" aria-hidden="true">↗</span></a>
+        <div class="contact-bottom"><p>함께 만들 다음 이야기를 기다립니다.<br>편하게 연락 주세요.</p><a class="email-link" href="mailto:wjdwltjr3939@naver.com">wjdwltjr3939@naver.com <span aria-hidden="true">↗</span></a></div>
       </div>
-    </div>
-  </section>
-
-  <!-- CONTACT -->
-  <section id="contact">
-    <div class="container">
-      <div class="section-label" style="color:rgba(255,255,255,0.4)">Contact</div>
-      <h2 class="section-title">연락하기</h2>
-      <p class="section-desc">함께 일하고 싶으시다면 편하게 연락 주세요.</p>
-
-      <div class="contact-grid">
-        <a
-          href="https://github.com/100bee"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="contact-card"
-        >
-          <div class="contact-icon ci-github">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
-              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-            </svg>
-          </div>
-          github.com/100bee
-        </a>
-
-        <a href="mailto:wjdwltjr3939@naver.com" class="contact-card">
-          <div class="contact-icon ci-email">✉️</div>
-          wjdwltjr3939@naver.com
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <footer>
-    <p>© 2025 <span>정지석</span>. Built with HTML · CSS · JS</p>
-  </footer>
-
-  <script>
-    const sections = document.querySelectorAll('section[id]');
-    const navLinks = document.querySelectorAll('.nav-links a');
-
-    window.addEventListener('scroll', () => {
-      let current = '';
-
-      sections.forEach(sec => {
-        if (window.scrollY >= sec.offsetTop - 80) {
-          current = sec.id;
-        }
-      });
-
-      navLinks.forEach(a => {
-        a.style.color = a.getAttribute('href') === '#' + current ? 'var(--accent)' : '';
-      });
-    });
-  </script>
+    </section>
+  </main>
+  <footer class="site-footer container"><span>© <span id="copyright-year">2026</span> 정지석</span><span class="footer-role mono">BACKEND DEVELOPER</span><div><a href="https://github.com/100bee" target="_blank" rel="noopener noreferrer">GitHub ↗</a><a href="#home">Back to top ↑</a></div></footer>
+  <script src="./script.js" defer></script>
 </body>
 </html>
