@@ -55,7 +55,8 @@ img { display: block; max-width: 100%; height: auto; }
 .text-link:hover { color: #2563eb; }
 .text-link > span { display: inline-block; transition: transform .25s; }
 .text-link:hover > span { transform: translate(3px, -3px); }
-.hero-link { margin-top: 2.2rem; gap: 1.5rem; }
+.hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1.75rem; margin-top: 2.2rem; }
+.hero-link { gap: 1.5rem; }
 .round-arrow { width: 36px; height: 36px; border: 1px solid #a6b6d0; border-radius: 50%; text-align: center; font: 1.1rem/34px var(--display); }
 .hero-link:hover .round-arrow { transform: translate(2px, 2px); }
 .hero-art { position: absolute; width: 66%; aspect-ratio: 1; right: -8%; top: 50%; transform: translateY(-47%); z-index: 0; }
@@ -207,7 +208,8 @@ img { display: block; max-width: 100%; height: auto; }
   .hero-intro { flex-direction: column; align-items: flex-start; gap: 1.1rem; margin-top: 2rem; }
   .hero-intro p { font-size: 1rem; }
   .hero-name { display: flex; align-items: baseline; gap: .8rem; }
-  .hero-link { margin-top: 1.8rem; }
+  .hero-actions { gap: 1.2rem; margin-top: 1.8rem; }
+  .hero-link { gap: .8rem; }
   .hero-bottom { padding-block: 1.3rem; }
   .hero-bottom > .mono { font-size: .75rem; max-width: 140px; }
   .scroll-link { font-size: .75rem; gap: 1rem; max-width: 145px; text-align: right; }
