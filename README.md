@@ -1,36 +1,34 @@
 # 정지석 — Software Engineer
 
-흰색·파란색·검정색의 기존 아이덴티티를 유지한 개발 포트폴리오입니다.
-밝은 배경은 순백색(#FFFFFF)을 사용하며, 베이지·아이보리·크림색은 사용하지 않습니다.
-대형 타이포그래피, 넓은 여백, 반응형 프로젝트 레이아웃, Canvas 기반 기하학 모션을 적용했습니다.
+기존 Software Engineer 첫 화면과 회전·마우스 반응 그래픽을 유지하고, 아래에 새 프로젝트 카드와 소개·기술·이력을 연결한 포트폴리오입니다.
 
-## 미리보기
+https://100bee.github.io/
 
-```sh
-npm run dev
-```
+## 소개 프로젝트
 
-http://127.0.0.1:4173 에서 확인합니다. Python 3가 필요하며 별도의 패키지 설치는 없습니다.
+- [RAGOps Copilot](https://github.com/100bee/rag-ops-copilot): 운영 문서 검색, 출처 확인과 검색 평가
+- [ITPT](https://github.com/CSInterviewProject/ITPT_PUBLIC): 음성 답변과 AI 피드백을 연결한 CS 면접 연습
+- [GazeSignal API](https://github.com/100bee/gaze-signal-api): 로컬 웹캠 분석과 REST·WebSocket 이벤트
+- [Chronote](https://github.com/100bee/Chronote): 관심사 기반 AI 매칭과 실시간 채팅
 
-## 배포
+프로젝트 설명은 2026-09-09 공개 README 기준입니다. RAGOps 이미지는 해당 저장소의 실제 실행 화면입니다. 기존 소개·학력·연락처와 Chronote UI 데모를 유지합니다.
 
-GitHub Pages는 기존과 같이 저장소 루트의 `index.html`을 그대로 제공합니다.
-ITPT 서비스, 공개 저장소 및 `chronote-demo/` 링크를 유지합니다.
+## 실행과 배포 준비
 
-Sites용 정적 빌드:
+- `npm run dev`: http://127.0.0.1:4173
+- `npm run build`: 내용 해시가 붙은 CSS·JS를 `assets/`에 생성하고 루트 HTML의 참조를 갱신한 뒤, 동일한 공개 파일을 `dist/`에 복사합니다.
+- GitHub Pages는 기존처럼 `main` 브랜치의 루트에서 배포합니다.
+- 별도 의존성 설치 없이 Python 3와 Node.js 18 이상을 사용합니다.
 
-```sh
-npm run build
-```
+## 수정할 소스
 
-빌드 결과는 `dist/`에 생성됩니다. Node.js 18 이상을 사용합니다.
+- `index.html`: 본문
+- `portfolio.css`: 프로젝트·소개·기술·이력·연락처 스타일
+- `navigation.js`: 메뉴·현재 섹션 표시
+- `hero.css`: 기존 첫 화면에만 적용하는 스타일
+- `hero-motion.js`: 원본 Canvas 애니메이션, 동작 줄이기 및 비활성 화면 정지 로직
+- `itpt-demo/`, `chronote-demo/`: 기존 로고와 UI 데모
 
-## 편집
+CSS·JS를 바꾼 뒤에는 반드시 `npm run build`를 실행하고, 갱신된 HTML과 생성된 해시 파일을 함께 반영합니다. 같은 파일명으로 다른 내용이 캐시되는 것을 방지하기 위한 구성입니다. 이전 해시 파일과 루트의 `styles.css`, `script.js`는 이전 HTML을 캐시한 방문자의 화면을 위해 유지합니다. 이 두 루트 파일은 새 디자인의 소스가 아닙니다.
 
-- `index.html`: 소개, 프로젝트, 기술, 학력, 연락처
-- `styles.css`: 반응형 레이아웃과 색상
-- `script.js`: 모바일 메뉴, 현재 섹션 표시, 입체 그래픽
-- `chronote-demo/`: 기존 Chronote UI 데모
-
-JavaScript 없이도 본문과 링크를 이용할 수 있습니다. 동작 줄이기를 설정하면
-입체 그래픽은 정지 화면으로 표시되며, 화면 밖이나 비활성 탭에서는 애니메이션을 멈춥니다.
+JavaScript 없이도 본문·링크·구현 내용 펼치기를 사용할 수 있습니다. Google Fonts가 로드되지 않으면 시스템 글꼴을 사용합니다.

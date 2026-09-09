@@ -1,0 +1,74 @@
+/* Original animated introduction, scoped so project cards keep their own layout. */
+#home {
+  --bg: #ffffff;
+  --text: #14171e;
+  --muted: #687487;
+  --line: #dce2ec;
+  --gutter: clamp(1.5rem, 5vw, 6rem);
+  position: relative;
+  isolation: isolate;
+  min-height: min(900px, 100svh);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  color: var(--text);
+}
+#home .container { width: min(100% - var(--gutter) * 2, 1440px); margin-inline: auto; }
+#home .mono { font-size: .75rem; letter-spacing: .045em; }
+#home .hero-inner { display: flex; align-items: center; flex: 1; padding-block: 170px 110px; }
+#home .hero-copy { position: relative; z-index: 2; pointer-events: none; }
+#home .hero-copy a { pointer-events: auto; }
+#home .eyebrow { display: flex; align-items: center; gap: .75rem; font: 400 .75rem/1.8 var(--mono); letter-spacing: .13em; color: #637084; margin-bottom: 2rem; }
+#home h1 { font: 500 clamp(4.6rem, 8.7vw, 9rem)/1.06 var(--display); letter-spacing: -.077em; }
+#home .title-secondary { color: #2563eb; }
+#home .title-dot { color: #161c27; }
+#home .hero-intro { margin-top: 2.25rem; display: flex; gap: 3rem; align-items: flex-end; }
+#home .hero-intro p { font-size: 1.0625rem; color: #515e71; line-height: 1.85; letter-spacing: -.025em; }
+#home .hero-name { font-size: .875rem; white-space: nowrap; }
+#home .hero-name > span { display: block; font: .75rem/1.9 var(--mono); color: var(--muted); }
+#home .text-link { display: inline-flex; align-items: center; justify-content: space-between; gap: 1.25rem; font-size: .875rem; transition: color .2s; }
+#home .text-link:hover { color: #2563eb; }
+#home .text-link > span { display: inline-block; transition: transform .25s; }
+#home .text-link:hover > span { transform: translate(3px, -3px); }
+#home .hero-actions { display: flex; flex-wrap: wrap; align-items: center; row-gap: 1rem; column-gap: 3.25rem; margin-top: 2.2rem; }
+#home .hero-link { gap: .7rem; }
+#home .round-arrow { width: 36px; height: 36px; border: 1px solid #a6b6d0; border-radius: 50%; text-align: center; font: 1.1rem/34px var(--display); }
+#home .hero-link:hover .round-arrow { transform: translate(2px, 2px); }
+#home .hero-art { position: absolute; width: 66%; aspect-ratio: 1; right: -8%; top: 50%; transform: translateY(-47%); z-index: 0; }
+#home .hero-art::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, var(--bg), transparent 38%); pointer-events: none; }
+#hero-canvas, #home .orbit-fallback { display: block; width: 100%; height: 100%; }
+#hero-canvas { position: absolute; inset: 0; }
+#home .orbit-fallback { opacity: .36; }
+#home .hero-art.is-ready .orbit-fallback { opacity: 0; }
+#home .hero-bottom { display: flex; justify-content: space-between; align-items: center; padding-block: 1.75rem; border-top: 1px solid var(--line); color: var(--muted); position: relative; z-index: 2; }
+#home .scroll-link { display: flex; align-items: center; gap: 2rem; }
+#home .scroll-link span { font-size: 1.1rem; color: #2563eb; }
+@media (min-width: 1600px) {
+  #home .hero-art { width: 1000px; right: calc((100vw - 1600px) / 2 - 120px); }
+}
+@media (max-width: 1100px) {
+  #home .hero-intro { gap: 2rem; }
+}
+@media (max-width: 800px) {
+  #home .hero-inner { padding-block: 165px 100px; }
+  #home h1 { font-size: clamp(4rem, 11.5vw, 6.5rem); }
+  #home .hero-art { width: 88%; right: -32%; opacity: .7; }
+  #home .hero-art::after { background: linear-gradient(90deg, var(--bg), transparent 68%); }
+  #home .hero-copy { width: 100%; }
+}
+@media (max-width: 600px) {
+  #home { min-height: max(760px, 100svh); }
+  #home .hero-inner { padding-top: 170px; padding-bottom: 70px; }
+  #home h1 { font-size: clamp(2.8rem, 13.3vw, 5.4rem); letter-spacing: -.075em; }
+  #home .eyebrow { font-size: .75rem; letter-spacing: .075em; margin-bottom: 2rem; }
+  #home .hero-art { width: 140%; right: -66%; top: 42%; opacity: .47; }
+  #home .hero-art::after { background: linear-gradient(90deg, var(--bg), transparent 80%); }
+  #home .hero-intro { flex-direction: column; align-items: flex-start; gap: 1.1rem; margin-top: 2rem; }
+  #home .hero-intro p { font-size: 1rem; }
+  #home .hero-name { display: flex; align-items: baseline; gap: .8rem; }
+  #home .hero-actions { row-gap: 1rem; column-gap: 2rem; margin-top: 1.8rem; }
+  #home .hero-link { gap: .6rem; }
+  #home .hero-bottom { padding-block: 1.3rem; }
+  #home .hero-bottom > .mono { font-size: .75rem; max-width: 140px; }
+  #home .scroll-link { font-size: .75rem; gap: 1rem; max-width: 145px; text-align: right; }
+}
