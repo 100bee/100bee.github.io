@@ -1,7 +1,5 @@
 # 정지석 — Software Engineer
 
-기존 Software Engineer 첫 화면과 회전·마우스 반응 그래픽을 유지하고, 아래에 새 프로젝트 카드와 소개·기술·이력을 연결한 포트폴리오입니다.
-
 https://100bee.github.io/
 
 ## 소개 프로젝트
