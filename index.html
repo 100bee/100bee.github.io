@@ -16,7 +16,7 @@
   <script>(function(){try{var d=document.documentElement;if(matchMedia('(prefers-reduced-motion: reduce)').matches||!matchMedia('(hover: hover) and (min-width: 761px)').matches)return;d.classList.add('cb-on');var seen=null;try{seen=sessionStorage.getItem('cb-hero-seen')}catch(e){}if(!seen)d.classList.add('cb-hero');setTimeout(function(){if(!window.__cursorBuild)d.classList.remove('cb-on','cb-hero')},3000)}catch(e){}})();</script>
   <script src="./assets/navigation.7bad77cbe3c0.js" defer></script>
   <script src="./assets/hero-motion.030dfb2c36b4.js" defer></script>
-  <script src="./assets/cursor-build.8b010a8ad41a.js" defer></script>
+  <script src="./assets/cursor-build.1b0317712d7c.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">본문으로 건너뛰기</a>
@@ -43,7 +43,7 @@
           <h1 id="hero-title"><span class="title-primary" data-cb="type" data-cb-group="hero">Software</span><br><span class="title-secondary" data-cb="type" data-cb-group="hero">Engineer<span class="title-dot" data-cb="drag" data-cb-group="hero">.</span></span></h1>
           <div class="hero-intro">
             <p data-cb="type" data-cb-group="hero">기술로 문제를 풀고,<br>아이디어를 서비스로 만듭니다.</p>
-            <span class="hero-name" data-cb="fade" data-cb-group="hero">정지석 <span>Software Engineer</span></span>
+            <span class="hero-name" data-cb="type" data-cb-group="hero">정지석 <span>Software Engineer</span></span>
           </div>
           <div class="hero-actions">
             <a class="text-link hero-link" data-cb="draw" data-cb-group="hero" href="#projects">프로젝트 살펴보기 <span class="round-arrow" aria-hidden="true">↗</span></a>
@@ -52,47 +52,47 @@
         </div>
       </div>
       <div class="hero-bottom container">
-        <span class="mono">DEVELOPMENT / LLMOPS / DATA / INFRASTRUCTURE</span>
-        <a class="scroll-link mono" href="#projects">SCROLL TO EXPLORE <span aria-hidden="true">↓</span></a>
+        <span class="mono" data-cb="type" data-cb-group="hero">DEVELOPMENT / LLMOPS / DATA / INFRASTRUCTURE</span>
+        <a class="scroll-link mono" href="#projects" data-cb="type" data-cb-group="hero">SCROLL TO EXPLORE <span aria-hidden="true">↓</span></a>
       </div>
     </section>
 
     <section class="section projects-section container" id="projects" aria-labelledby="projects-title">
       <div class="section-heading">
         <div><p class="eyebrow">01 / SELECTED WORK</p><h2 id="projects-title" data-cb="type" data-cursor="PM">만들며 쌓은 경험<span class="heading-count">04</span></h2></div>
-        <p class="section-caption">서비스를 만들고, AI를 연결하고,<br>그 결과를 확인합니다.</p>
+        <p class="section-caption" data-cb="type" data-cursor="Designer" data-cb-delay="350">서비스를 만들고, AI를 연결하고,<br>그 결과를 확인합니다.</p>
       </div>
       <div class="project-grid">
-        <article class="project-card" id="ragops">
-          <a class="project-cover rag-cover" href="https://github.com/100bee/rag-ops-copilot" target="_blank" rel="noopener noreferrer" aria-label="RAGOps Copilot GitHub 저장소 열기">
-            <div class="cover-top mono"><span>01 / RAG & EVALUATION</span><span aria-hidden="true">↗</span></div>
-            <img src="./assets/rag-dashboard.png" width="1280" height="720" alt="운영 장애 대응 RAG 대시보드" loading="lazy">
-          </a>
-          <div class="project-body">
-            <div class="project-title-row"><h3>RAGOps Copilot</h3><span class="project-kind">설계·평가 MVP</span></div>
-            <p class="project-subtitle">출처와 실행 과정을 확인하는 장애 대응 RAG</p>
-            <p class="project-description">운영 문서를 검색해 근거가 있는 대응 절차를 제안합니다. 검색 방식의 성능을 비교하고, 출처·지연시간·토큰을 함께 확인할 수 있도록 만들었습니다.</p>
-            <ul class="tech-tags" aria-label="RAGOps 기술"><li>FastAPI</li><li>pgvector</li><li>Next.js</li><li>Gemini</li></ul>
-            <details class="project-details"><summary>구현 내용 <span aria-hidden="true">+</span></summary><ul><li>문서 업로드 → 마스킹 → 청킹 → 임베딩 → 검색 파이프라인</li><li>Vector·Keyword·Hybrid 검색 비교와 출처 ID 검증</li><li>문서 12개·질문 20개의 작은 평가셋으로 검색·근거 판정 실험</li><li>검색 후보, 지연시간, 토큰, Trace를 확인하는 진단 화면</li></ul><p class="detail-note">검색 근거 판정에서 거절 대상 질문을 잘못 허용하는 한계를 기록했습니다. 실제 운영 서비스의 성과를 측정한 프로젝트는 아닙니다.</p></details>
-            <div class="project-links"><a href="https://github.com/100bee/rag-ops-copilot" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a><a href="https://github.com/100bee/rag-ops-copilot/blob/main/docs/architecture.md" target="_blank" rel="noopener noreferrer">아키텍처 <span aria-hidden="true">↗</span></a></div>
-          </div>
-        </article>
         <article class="project-card" id="itpt" data-cb="draw" data-cursor="Developer" data-cb-click=".project-links a">
           <a class="project-cover itpt-cover" href="https://itpt.cloud/" target="_blank" rel="noopener noreferrer" aria-label="ITPT 서비스 방문">
-            <div class="cover-top mono"><span>02 / INTERVIEW × AI</span><span aria-hidden="true">↗</span></div>
+            <div class="cover-top mono"><span>01 / INTERVIEW × AI</span><span aria-hidden="true">↗</span></div>
             <div class="brand-center"><img src="./itpt-demo/ITPT_logo.png" width="875" height="350" alt="ITPT" loading="lazy"><p>Speak. Learn. Grow.</p></div>
             <div class="cover-bottom mono"><span>질문 → 음성 답변 → AI 피드백</span><span>ITPT</span></div>
           </a>
           <div class="project-body">
-            <div class="project-title-row"><h3>ITPT</h3><span class="project-kind">웹 서비스</span></div>
-            <p class="project-subtitle">말로 연습하고, 피드백으로 성장하는 CS 면접</p>
-            <p class="project-description">혼자 하는 면접 준비에 반복 연습과 피드백을 더했습니다. 음성 답변을 기록하고 AI 채점, 꼬리질문, 카테고리별 약점 분석으로 연결합니다.</p>
-            <ul class="tech-tags" aria-label="ITPT 기술"><li>Spring Boot</li><li>React</li><li>MySQL</li><li>OpenAI · STT</li></ul>
+            <div class="project-title-row"><h3 data-cb="type" data-cursor="PM" data-cb-after="#itpt">ITPT</h3><span class="project-kind">웹 서비스</span></div>
+            <p class="project-subtitle" data-cb="type" data-cursor="Designer" data-cb-after="#itpt" data-cb-delay="150">말로 연습하고, 피드백으로 성장하는 CS 면접</p>
+            <p class="project-description" data-cb="type" data-cursor="QA" data-cb-after="#itpt" data-cb-delay="300">혼자 하는 면접 준비에 반복 연습과 피드백을 더했습니다. 음성 답변을 기록하고 AI 채점, 꼬리질문, 카테고리별 약점 분석으로 연결합니다.</p>
+            <ul class="tech-tags" data-cb="type" data-cursor="Intern" data-cb-after="#itpt" data-cb-delay="500" aria-label="ITPT 기술"><li>Spring Boot</li><li>React</li><li>MySQL</li><li>OpenAI · STT</li></ul>
             <details class="project-details"><summary>구현 내용 <span aria-hidden="true">+</span></summary><ul><li>Clova STT 음성 변환과 OpenAI 채점·피드백 연동</li><li>면접 기록, 점수 추이, 카테고리별 분석 대시보드</li><li>Spring Security · JWT · 소셜 로그인 인증</li><li>관리자 기능, Docker Compose 개발 환경과 AWS EC2 배포</li></ul></details>
             <div class="project-links"><a href="https://itpt.cloud/" target="_blank" rel="noopener noreferrer">서비스 방문 <span aria-hidden="true">↗</span></a><a href="https://github.com/CSInterviewProject/ITPT_PUBLIC" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a></div>
           </div>
         </article>
-        <article class="project-card" id="gaze">
+        <article class="project-card" id="ragops" data-cb="draw" data-cursor="Designer" data-cb-delay="300" data-cb-click=".project-links a">
+          <a class="project-cover rag-cover" href="https://github.com/100bee/rag-ops-copilot" target="_blank" rel="noopener noreferrer" aria-label="RAGOps Copilot GitHub 저장소 열기">
+            <div class="cover-top mono"><span>02 / RAG & EVALUATION</span><span aria-hidden="true">↗</span></div>
+            <img src="./assets/rag-dashboard.png" width="1280" height="720" alt="운영 장애 대응 RAG 대시보드" loading="lazy">
+          </a>
+          <div class="project-body">
+            <div class="project-title-row"><h3 data-cb="type" data-cursor="Reviewer" data-cb-after="#ragops">RAGOps Copilot</h3><span class="project-kind">설계·평가 MVP</span></div>
+            <p class="project-subtitle" data-cb="type" data-cursor="Intern" data-cb-after="#ragops" data-cb-delay="150">출처와 실행 과정을 확인하는 장애 대응 RAG</p>
+            <p class="project-description" data-cb="type" data-cursor="PM" data-cb-after="#ragops" data-cb-delay="300">운영 문서를 검색해 근거가 있는 대응 절차를 제안합니다. 검색 방식의 성능을 비교하고, 출처·지연시간·토큰을 함께 확인할 수 있도록 만들었습니다.</p>
+            <ul class="tech-tags" data-cb="type" data-cursor="Developer" data-cb-after="#ragops" data-cb-delay="500" aria-label="RAGOps 기술"><li>FastAPI</li><li>pgvector</li><li>Next.js</li><li>Gemini</li></ul>
+            <details class="project-details"><summary>구현 내용 <span aria-hidden="true">+</span></summary><ul><li>문서 업로드 → 마스킹 → 청킹 → 임베딩 → 검색 파이프라인</li><li>Vector·Keyword·Hybrid 검색 비교와 출처 ID 검증</li><li>문서 12개·질문 20개의 작은 평가셋으로 검색·근거 판정 실험</li><li>검색 후보, 지연시간, 토큰, Trace를 확인하는 진단 화면</li></ul><p class="detail-note">검색 근거 판정에서 거절 대상 질문을 잘못 허용하는 한계를 기록했습니다. 실제 운영 서비스의 성과를 측정한 프로젝트는 아닙니다.</p></details>
+            <div class="project-links"><a href="https://github.com/100bee/rag-ops-copilot" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a><a href="https://github.com/100bee/rag-ops-copilot/blob/main/docs/architecture.md" target="_blank" rel="noopener noreferrer">아키텍처 <span aria-hidden="true">↗</span></a></div>
+          </div>
+        </article>
+        <article class="project-card" id="gaze" data-cb="draw" data-cursor="Reviewer" data-cb-click=".project-links a">
           <a class="project-cover gaze-cover" href="https://github.com/100bee/gaze-signal-api" target="_blank" rel="noopener noreferrer" aria-label="GazeSignal API GitHub 저장소 열기">
             <div class="cover-top mono"><span>03 / COMPUTER VISION</span><span aria-hidden="true">↗</span></div>
             <div class="gaze-wordmark">Gaze<span>Signal</span><span class="api-label mono">API</span></div>
@@ -100,25 +100,25 @@
             <div class="cover-bottom mono"><span>LOCAL PROCESSING</span><span>REST + WEBSOCKET</span></div>
           </a>
           <div class="project-body">
-            <div class="project-title-row"><h3>GazeSignal API</h3><span class="project-kind">비전 API</span></div>
-            <p class="project-subtitle">웹캠의 시각 신호를 구조화된 이벤트로</p>
-            <p class="project-description">웹캠 영상을 로컬에서 분석해 대략적인 시선 방향, 얼굴 존재, 머리 자세를 전달합니다. 원본 영상 대신 파생된 신호를 REST와 WebSocket으로 연결합니다.</p>
-            <ul class="tech-tags" aria-label="GazeSignal 기술"><li>FastAPI</li><li>OpenCV</li><li>MediaPipe</li><li>WebSocket</li></ul>
+            <div class="project-title-row"><h3 data-cb="type" data-cursor="QA" data-cb-after="#gaze">GazeSignal API</h3><span class="project-kind">비전 API</span></div>
+            <p class="project-subtitle" data-cb="type" data-cursor="Developer" data-cb-after="#gaze" data-cb-delay="150">웹캠의 시각 신호를 구조화된 이벤트로</p>
+            <p class="project-description" data-cb="type" data-cursor="Designer" data-cb-after="#gaze" data-cb-delay="300">웹캠 영상을 로컬에서 분석해 대략적인 시선 방향, 얼굴 존재, 머리 자세를 전달합니다. 원본 영상 대신 파생된 신호를 REST와 WebSocket으로 연결합니다.</p>
+            <ul class="tech-tags" data-cb="type" data-cursor="PM" data-cb-after="#gaze" data-cb-delay="500" aria-label="GazeSignal 기술"><li>FastAPI</li><li>OpenCV</li><li>MediaPipe</li><li>WebSocket</li></ul>
             <details class="project-details"><summary>구현 내용 <span aria-hidden="true">+</span></summary><ul><li>얼굴·눈·홍채 랜드마크와 solvePnP 기반 머리 자세 추정</li><li>5점·9점 캘리브레이션, 상태 평활화와 전환 안정화</li><li>최신 프레임 버퍼, 카메라 연결 해제와 느린 소비자 대응</li><li>SQLite 세션 요약과 WebSocket 이벤트 구독</li></ul><p class="detail-note">일반 웹캠 기반의 대략적인 방향 추정입니다. 집중도·감정·의도를 판정하지 않습니다.</p></details>
             <div class="project-links"><a href="https://github.com/100bee/gaze-signal-api" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a><a href="https://github.com/100bee/gaze-signal-api#동작-방식" target="_blank" rel="noopener noreferrer">동작 방식 <span aria-hidden="true">↗</span></a></div>
           </div>
         </article>
-        <article class="project-card" id="chronote">
+        <article class="project-card" id="chronote" data-cb="draw" data-cursor="PM" data-cb-delay="300" data-cb-click=".project-links a">
           <a class="project-cover chronote-cover" href="./chronote-demo/" target="_blank" rel="noopener noreferrer" aria-label="Chronote 기존 UI 데모 열기">
             <div class="cover-top mono"><span>04 / COMMUNITY × AI</span><span aria-hidden="true">↗</span></div>
             <div class="chronote-brand"><img src="./chronote-demo/favicon2.png" width="1024" height="1024" alt="" loading="lazy"><span>chronote<span class="brand-period">.</span></span></div>
             <div class="cover-bottom mono"><span>관심사로 연결되는 대화</span><span>AI MATCHING</span></div>
           </a>
           <div class="project-body">
-            <div class="project-title-row"><h3>Chronote</h3><span class="project-kind">매칭·실시간 채팅</span></div>
-            <p class="project-subtitle">같은 관심사를 가진 사람들을 연결하는 AI 매칭</p>
-            <p class="project-description">관심 주제를 입력하면 한국어 임베딩으로 맞는 채팅방을 찾습니다. 적합한 방이 없으면 새로 만들고, 실시간 채팅과 학습 기록으로 대화를 이어갑니다.</p>
-            <ul class="tech-tags" aria-label="Chronote 기술"><li>Spring Boot</li><li>FastAPI</li><li>React</li><li>MongoDB</li></ul>
+            <div class="project-title-row"><h3 data-cb="type" data-cursor="Intern" data-cb-after="#chronote">Chronote</h3><span class="project-kind">매칭·실시간 채팅</span></div>
+            <p class="project-subtitle" data-cb="type" data-cursor="Reviewer" data-cb-after="#chronote" data-cb-delay="150">같은 관심사를 가진 사람들을 연결하는 AI 매칭</p>
+            <p class="project-description" data-cb="type" data-cursor="Developer" data-cb-after="#chronote" data-cb-delay="300">관심 주제를 입력하면 한국어 임베딩으로 맞는 채팅방을 찾습니다. 적합한 방이 없으면 새로 만들고, 실시간 채팅과 학습 기록으로 대화를 이어갑니다.</p>
+            <ul class="tech-tags" data-cb="type" data-cursor="QA" data-cb-after="#chronote" data-cb-delay="500" aria-label="Chronote 기술"><li>Spring Boot</li><li>FastAPI</li><li>React</li><li>MongoDB</li></ul>
             <details class="project-details"><summary>구현 내용 <span aria-hidden="true">+</span></summary><ul><li>FastAPI 한국어 임베딩 기반 채팅방 유사도 매칭</li><li>STOMP·WebSocket 실시간 그룹 채팅</li><li>MySQL 정형 데이터와 MongoDB 채팅 메시지 저장</li><li>Node.js·Express에서 Java·Spring Boot로 마이그레이션</li></ul><p class="detail-note">UI 데모는 기존 학습 관리 화면입니다. 현재 저장소의 전체 백엔드 기능을 실행하는 데모는 아닙니다.</p></details>
             <div class="project-links"><a href="./chronote-demo/" target="_blank" rel="noopener noreferrer">기존 UI 데모 <span aria-hidden="true">↗</span></a><a href="https://github.com/100bee/Chronote" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a></div>
           </div>
@@ -129,30 +129,30 @@
     <section class="about-section" id="about" aria-labelledby="about-title">
       <div class="container about-grid">
         <div><p class="eyebrow">02 / ABOUT ME</p><h2 id="about-title" data-cb="type" data-cursor="Designer">문제에서 시작해,<br><span>동작하는 결과까지.</span></h2></div>
-        <div class="about-copy"><p class="about-lead">안녕하세요.<br>소프트웨어 엔지니어 정지석입니다.</p><p>필요한 기능을 구현하는 것에서 한 걸음 더 나아가, 서비스의 흐름 안에서 기술이 어떤 역할을 하는지 고민합니다.</p><p>면접 서비스와 실시간 채팅을 개발하고, RAG 검색 평가와 비전 API로 경험을 넓혀가고 있습니다. 직접 만들고 확인하는 과정에서 더 나은 방법을 찾습니다.</p><a class="inline-link" href="https://github.com/100bee" target="_blank" rel="noopener noreferrer">GitHub에서 더 알아보기 <span aria-hidden="true">↗</span></a></div>
+        <div class="about-copy"><p class="about-lead" data-cb="type" data-cursor="PM" data-cb-delay="250">안녕하세요.<br>소프트웨어 엔지니어 정지석입니다.</p><p data-cb="type" data-cursor="Developer" data-cb-delay="450">필요한 기능을 구현하는 것에서 한 걸음 더 나아가, 서비스의 흐름 안에서 기술이 어떤 역할을 하는지 고민합니다.</p><p data-cb="type" data-cursor="Reviewer" data-cb-delay="650">면접 서비스와 실시간 채팅을 개발하고, RAG 검색 평가와 비전 API로 경험을 넓혀가고 있습니다. 직접 만들고 확인하는 과정에서 더 나은 방법을 찾습니다.</p><a class="inline-link" data-cb="draw" data-cursor="QA" data-cb-delay="900" href="https://github.com/100bee" target="_blank" rel="noopener noreferrer">GitHub에서 더 알아보기 <span aria-hidden="true">↗</span></a></div>
       </div>
     </section>
 
     <section class="section container" id="skills" aria-labelledby="skills-title">
-      <div class="section-heading"><div><p class="eyebrow">03 / TOOLKIT</p><h2 id="skills-title" data-cb="type" data-cursor="Developer">필요한 곳에, 필요한 기술.</h2></div><p class="section-caption">프로젝트에서 사용한 기술들</p></div>
+      <div class="section-heading"><div><p class="eyebrow">03 / TOOLKIT</p><h2 id="skills-title" data-cb="type" data-cursor="Developer">필요한 곳에, 필요한 기술.</h2></div><p class="section-caption" data-cb="type" data-cursor="Intern" data-cb-delay="300">프로젝트에서 사용한 기술들</p></div>
       <div class="skills-grid">
-        <div class="skill"><span class="skill-symbol" aria-hidden="true">{ }</span><span class="mono skill-number">01</span><h3>Backend & API</h3><p>Java · Spring Boot · Python<br>FastAPI · REST · WebSocket</p><span class="skill-context">인증, 도메인 로직, 실시간 통신</span></div>
-        <div class="skill"><span class="skill-symbol" aria-hidden="true">↗</span><span class="mono skill-number">02</span><h3>AI & Data</h3><p>pgvector · PostgreSQL · MySQL<br>Gemini · OpenAI · OpenCV</p><span class="skill-context">AI 연동, 검색 평가, 영상 분석</span></div>
-        <div class="skill"><span class="skill-symbol" aria-hidden="true">[ ]</span><span class="mono skill-number">03</span><h3>Product & Delivery</h3><p>React · Next.js · TypeScript<br>Docker · AWS EC2 · GitHub Actions</p><span class="skill-context">사용자 화면부터 실행 환경까지</span></div>
+        <div class="skill" id="skill-backend" data-cb="draw" data-cursor="Developer" data-cb-delay="0"><span class="skill-symbol" aria-hidden="true">{ }</span><span class="mono skill-number">01</span><h3 data-cb="type" data-cursor="PM" data-cb-after="#skill-backend">Backend & API</h3><p data-cb="type" data-cursor="Reviewer" data-cb-after="#skill-backend" data-cb-delay="200">Java · Spring Boot · Python<br>FastAPI · REST · WebSocket</p><span class="skill-context">인증, 도메인 로직, 실시간 통신</span></div>
+        <div class="skill" id="skill-ai" data-cb="draw" data-cursor="Designer" data-cb-delay="200"><span class="skill-symbol" aria-hidden="true">↗</span><span class="mono skill-number">02</span><h3 data-cb="type" data-cursor="Intern" data-cb-after="#skill-ai">AI & Data</h3><p data-cb="type" data-cursor="PM" data-cb-after="#skill-ai" data-cb-delay="200">pgvector · PostgreSQL · MySQL<br>Gemini · OpenAI · OpenCV</p><span class="skill-context">AI 연동, 검색 평가, 영상 분석</span></div>
+        <div class="skill" id="skill-product" data-cb="draw" data-cursor="QA" data-cb-delay="400"><span class="skill-symbol" aria-hidden="true">[ ]</span><span class="mono skill-number">03</span><h3 data-cb="type" data-cursor="Reviewer" data-cb-after="#skill-product">Product & Delivery</h3><p data-cb="type" data-cursor="Intern" data-cb-after="#skill-product" data-cb-delay="200">React · Next.js · TypeScript<br>Docker · AWS EC2 · GitHub Actions</p><span class="skill-context">사용자 화면부터 실행 환경까지</span></div>
       </div>
     </section>
 
     <section class="journey-section container" id="timeline" aria-labelledby="journey-title">
       <div><p class="eyebrow">04 / JOURNEY</p><h2 id="journey-title" data-cb="type" data-cursor="Reviewer">배우고, 만들어 온 과정.</h2></div>
       <div class="journey-list">
-        <div class="journey-row"><span class="mono">2024.03 — 2026.08</span><div><h3>단국대학교</h3><p>소프트웨어학과</p></div><span class="journey-kind">EDUCATION</span></div>
-        <div class="journey-row"><span class="mono">2025.12 — 2026.03</span><div><h3>ITPT</h3><p>CS 기술 면접 준비 플랫폼 · 서비스 개발과 AI 연동</p></div><span class="journey-kind">GRADUATION PROJECT</span></div>
-        <div class="journey-row"><span class="mono">2025.06 — 2025.08</span><div><h3>Chronote</h3><p>AI 기반 학습 관리 · 관심사 매칭과 실시간 채팅</p></div><span class="journey-kind">TEAM PROJECT</span></div>
+        <div class="journey-row"><span class="mono" data-cb="type" data-cursor="QA">2024.03 — 2026.08</span><div><h3 data-cb="type" data-cursor="PM" data-cb-delay="150">단국대학교</h3><p data-cb="type" data-cursor="Designer" data-cb-delay="300">소프트웨어학과</p></div><span class="journey-kind">EDUCATION</span></div>
+        <div class="journey-row"><span class="mono" data-cb="type" data-cursor="Intern">2025.12 — 2026.03</span><div><h3 data-cb="type" data-cursor="Developer" data-cb-delay="150">ITPT</h3><p data-cb="type" data-cursor="Reviewer" data-cb-delay="300">CS 기술 면접 준비 플랫폼 · 서비스 개발과 AI 연동</p></div><span class="journey-kind">GRADUATION PROJECT</span></div>
+        <div class="journey-row"><span class="mono" data-cb="type" data-cursor="Designer">2025.06 — 2025.08</span><div><h3 data-cb="type" data-cursor="QA" data-cb-delay="150">Chronote</h3><p data-cb="type" data-cursor="PM" data-cb-delay="300">AI 기반 학습 관리 · 관심사 매칭과 실시간 채팅</p></div><span class="journey-kind">TEAM PROJECT</span></div>
       </div>
     </section>
 
     <section class="contact-section" id="contact" aria-labelledby="contact-title">
-      <div class="container contact-inner"><div><p class="eyebrow">05 / WHAT'S NEXT</p><h2 id="contact-title" data-cb="type" data-cursor="Designer">다음 이야기를<br>함께 만들어 볼까요<span>?</span></h2><p>프로젝트 이야기부터 새로운 기회까지, 편하게 연락 주세요.</p></div><a class="contact-link" href="mailto:wjdwltjr3939@naver.com"><span class="contact-arrow" aria-hidden="true">↗</span><span data-cb="type" data-cursor="PM" data-cb-delay="900" data-cb-click=".contact-action">wjdwltjr3939@naver.com</span><span class="contact-action">이메일 보내기</span></a></div>
+      <div class="container contact-inner"><div><p class="eyebrow">05 / WHAT'S NEXT</p><h2 id="contact-title" data-cb="type" data-cursor="Designer">다음 이야기를<br>함께 만들어 볼까요<span>?</span></h2><p data-cb="type" data-cursor="QA" data-cb-delay="500">프로젝트 이야기부터 새로운 기회까지, 편하게 연락 주세요.</p></div><a class="contact-link" href="mailto:wjdwltjr3939@naver.com"><span class="contact-arrow" aria-hidden="true">↗</span><span data-cb="type" data-cursor="PM" data-cb-delay="900" data-cb-click=".contact-action">wjdwltjr3939@naver.com</span><span class="contact-action">이메일 보내기</span></a></div>
     </section>
   </main>
   <footer class="site-footer container"><span>© <span id="copyright-year">2026</span> Jiseok Jung</span><span class="mono footer-role">MADE WITH PURPOSE.</span><div><a href="https://github.com/100bee" target="_blank" rel="noopener noreferrer">GitHub ↗</a><a href="#home" data-cb-replay>인트로 다시 보기 ↺</a><a href="#home">맨 위로 ↑</a></div></footer>

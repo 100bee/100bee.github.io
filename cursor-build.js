@@ -12,7 +12,9 @@
     'PM': '#2563eb',
     'Developer': '#0b7a5e',
     'Reviewer': '#14171e',
-    'Designer': '#c2410c'
+    'Designer': '#c2410c',
+    'QA': '#7c3aed',
+    'Intern': '#be185d'
   };
   const CHO = 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
   const HERO_KEY = 'cb-hero-seen';
@@ -103,7 +105,16 @@
 
   // ---- reveal helpers ----------------------------------------------------
   const live = (el) => el.classList.add('cb-live');
-  const done = (el) => { el.classList.remove('cb-live'); el.classList.add('cb-done'); };
+  const done = (el) => {
+    el.classList.remove('cb-live');
+    if (el.classList.contains('cb-done')) return;
+    el.classList.add('cb-done');
+    el.dispatchEvent(new Event('cb:done'));
+  };
+  const whenDone = (el) => new Promise((resolve) => {
+    if (!el || el.classList.contains('cb-done')) resolve();
+    else el.addEventListener('cb:done', resolve, { once: true });
+  });
 
   // Split every text node into a visible part and a hidden remainder, so the
   // final layout is held from the first frame and nothing below it shifts.
@@ -209,10 +220,12 @@
     box.style.background = cur.color + '14';
     layer.appendChild(box);
     let p = 0;
-    const stop = follow(() => {
+    const update = () => {
       const r = rectOf(el);
-      place(box, r.left - pad, r.top - pad, (r.width + pad * 2) * p, (r.height + pad * 2) * p);
-    });
+      const e = ease(p);
+      place(box, r.left - pad, r.top - pad, (r.width + pad * 2) * e, (r.height + pad * 2) * e);
+    };
+    const stop = follow(update);
     const corner = () => {
       const r = rectOf(el);
       return { x: r.left - pad + (r.width + pad * 2) * ease(p), y: r.top - pad + (r.height + pad * 2) * ease(p) };
@@ -220,7 +233,7 @@
     await moveTo(ctx, cur, corner, opts.approach || 480);
     cur.click();
     cur.press(true);
-    await tween(ctx, opts.ms || 480, (q) => { p = q; const c = corner(); cur.set(c.x, c.y); });
+    await tween(ctx, opts.ms || 480, (q) => { p = q; update(); const c = corner(); cur.set(c.x, c.y); });
     cur.press(false);
     live(el);
     await wait(ctx, 120);
@@ -240,17 +253,18 @@
     dim.style.background = cur.color;
     layer.appendChild(box);
     let p = 0;
-    const stop = follow(() => {
+    const update = () => {
       const r = rectOf(el);
-      place(box, r.left, r.top, r.width * p, r.height * p);
+      place(box, r.left, r.top, r.width * ease(p), r.height * ease(p));
       dim.textContent = Math.round(r.width) + ' × ' + Math.round(r.height);
       box.classList.toggle('is-done', p >= 1);
-    });
+    };
+    const stop = follow(update);
     const corner = () => { const r = rectOf(el); return { x: r.left + r.width * ease(p), y: r.top + r.height * ease(p) }; };
     await moveTo(ctx, cur, corner, opts.approach || 480);
     cur.click();
     cur.press(true);
-    await tween(ctx, opts.ms || 420, (q) => { p = q; const c = corner(); cur.set(c.x, c.y); });
+    await tween(ctx, opts.ms || 420, (q) => { p = q; update(); const c = corner(); cur.set(c.x, c.y); });
     cur.press(false);
     return () => {
       box.style.opacity = '0';
@@ -304,6 +318,7 @@
     const el = {
       eyebrow: q('#home .eyebrow'), title: q('#hero-title'), sw: q('#home .title-primary'), en: q('#home .title-secondary'),
       dot: q('#home .title-dot'), intro: q('#home .hero-intro p'), name: q('#home .hero-name'), art: q('#home .hero-art'),
+      tagline: q('#home .hero-bottom > .mono'), scroll: q('#home .scroll-link'),
       links: [...document.querySelectorAll('#home .hero-link')]
     };
     if (Object.values(el).some((v) => !v) || el.links.length < 2) { heroItems().forEach(done); return; }
@@ -328,13 +343,14 @@
     const B = spawn('Developer', W + 40, -40);
     const C = spawn('Reviewer', W + 60, H * .45);
     const D = spawn('Designer', W * .62, H + 50);
+    const E = spawn('QA', -60, H + 40);
+    const F = spawn('Intern', W + 50, H + 30);
 
     try {
       await Promise.all([
         (async () => {
           await until(ctx, 120); await type(ctx, A, el.eyebrow, { ms: 620 });
           await until(ctx, 1950); await type(ctx, A, el.intro, { ms: 1250 });
-          live(el.name); await wait(ctx, 200); done(el.name);
           await leave(ctx, A, -80, H + 60);
         })(),
         (async () => {
@@ -344,6 +360,7 @@
         })(),
         (async () => {
           await until(ctx, 700); await type(ctx, C, el.en, { ms: 620, skip: '.title-dot' });
+          await until(ctx, 2500); await type(ctx, C, el.name, { ms: 600 });
           await until(ctx, 3420); await draw(ctx, C, el.links[1], { ms: 420 });
           await leave(ctx, C, W + 80, H * .7);
         })(),
@@ -354,6 +371,15 @@
           await until(ctx, 2450); await drag(ctx, D, el.dot, { dx: 190, dy: -150, ms: 560, approach: 300 });
           await until(ctx, 3050); removeFrame();
           await leave(ctx, D, W * .5, H + 80);
+        })(),
+        (async () => {
+          await until(ctx, 900); await type(ctx, E, el.tagline, { ms: 950, approach: 600 });
+          await leave(ctx, E, -80, H + 80);
+        })(),
+        (async () => {
+          await until(ctx, 1600); await type(ctx, F, el.scroll, { ms: 650, approach: 600 });
+          await until(ctx, 3600); await clickOn(ctx, F, el.scroll);
+          await leave(ctx, F, W + 80, H + 60);
         })()
       ]);
     } catch (e) {
@@ -371,9 +397,11 @@
   const playOne = async (el) => {
     const ctx = { skip: false, start: now() };
     const label = el.dataset.cursor || 'PM';
+    if (el.dataset.cbAfter) await whenDone(document.querySelector(el.dataset.cbAfter));
     await wait(ctx, Number(el.dataset.cbDelay || 0));
     const r = rectOf(el);
-    const cur = spawn(label, innerWidth + 40, clamp(r.top + 40, 20, innerHeight - 20));
+    const fromLeft = r.left + r.width / 2 < innerWidth / 2;
+    const cur = spawn(label, fromLeft ? -50 : innerWidth + 40, clamp(r.top + 40 + (Math.random() - .5) * 260, 20, innerHeight - 20));
     try {
       if (el.dataset.cb === 'draw') await draw(ctx, cur, el, { pad: 0, ms: 620, approach: 620 });
       else await type(ctx, cur, el, { approach: 560 });
@@ -381,7 +409,7 @@
     } catch (e) {
       done(el);
     }
-    await leave(ctx, cur, innerWidth + 60, clamp(cur.y - 80, -60, innerHeight));
+    await leave(ctx, cur, fromLeft ? -70 : innerWidth + 60, clamp(cur.y + (Math.random() - .5) * 200, -60, innerHeight + 40));
   };
 
   const pieces = [...document.querySelectorAll('[data-cb]:not([data-cb-group])')];

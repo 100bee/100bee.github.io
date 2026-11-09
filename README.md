@@ -4,8 +4,8 @@ https://100bee.github.io/
 
 ## 소개 프로젝트
 
-- [RAGOps Copilot](https://github.com/100bee/rag-ops-copilot): 운영 문서 검색, 출처 확인과 검색 평가
 - [ITPT](https://github.com/CSInterviewProject/ITPT_PUBLIC): 음성 답변과 AI 피드백을 연결한 CS 면접 연습
+- [RAGOps Copilot](https://github.com/100bee/rag-ops-copilot): 운영 문서 검색, 출처 확인과 검색 평가
 - [GazeSignal API](https://github.com/100bee/gaze-signal-api): 로컬 웹캠 분석과 REST·WebSocket 이벤트
 - [Chronote](https://github.com/100bee/Chronote): 관심사 기반 AI 매칭과 실시간 채팅
 
