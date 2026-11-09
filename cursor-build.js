@@ -2,7 +2,7 @@
   'use strict';
 
   // Multiplayer-style cursors that type and draw parts of the page.
-  // Content is plain HTML first: this script only hides and reveals it, so the
+  // The hero intro plays on every visit. Content is plain HTML first: this script only hides and reveals it, so the
   // page is complete without JavaScript, for reduced motion and on touch screens.
   const root = document.documentElement;
   if (!root.classList.contains('cb-on')) return;
@@ -17,7 +17,6 @@
     'Intern': '#be185d'
   };
   const CHO = 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
-  const HERO_KEY = 'cb-hero-seen';
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
   const ease = (p) => (p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
   const now = () => performance.now();
@@ -322,7 +321,6 @@
       links: [...document.querySelectorAll('#home .hero-link')]
     };
     if (Object.values(el).some((v) => !v) || el.links.length < 2) { heroItems().forEach(done); return; }
-    try { sessionStorage.setItem(HERO_KEY, '1'); } catch (e) {}
 
     const ctx = { skip: false, start: now() };
     heroCtx = ctx;
