@@ -5,7 +5,7 @@ import { basename, extname } from 'node:path';
 // GitHub Pages serves the repository root. Generate content-addressed asset
 // names there, then copy the same public files to dist for local/static builds.
 // Retain earlier asset versions so a cached HTML document still has its styles.
-const sourceAssets = ['portfolio.css', 'navigation.js', 'hero.css', 'hero-motion.js'];
+const sourceAssets = ['portfolio.css', 'navigation.js', 'hero.css', 'hero-motion.js', 'cursor-build.css', 'cursor-build.js'];
 await mkdir('assets', { recursive: true });
 let html = await readFile('index.html', 'utf8');
 for (const file of sourceAssets) {
