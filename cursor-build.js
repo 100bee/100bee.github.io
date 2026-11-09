@@ -9,12 +9,10 @@
   window.__cursorBuild = true;
 
   const COLORS = {
-    'React': '#2563eb',
-    'Spring Boot': '#0b7a5e',
-    'OpenAI': '#14171e',
-    'MySQL': '#c2410c',
-    'FastAPI': '#047857',
-    'Docker': '#1d4ed8'
+    'PM': '#2563eb',
+    'Developer': '#0b7a5e',
+    'Reviewer': '#14171e',
+    'Designer': '#c2410c'
   };
   const CHO = 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
   const HERO_KEY = 'cb-hero-seen';
@@ -326,10 +324,10 @@
     await Promise.race([document.fonts ? document.fonts.ready : Promise.resolve(), new Promise((r) => setTimeout(r, 700))]);
     ctx.start = now();
     const W = innerWidth, H = innerHeight;
-    const A = spawn('React', -60, H * .82);
-    const B = spawn('Spring Boot', W + 40, -40);
-    const C = spawn('OpenAI', W + 60, H * .45);
-    const D = spawn('MySQL', W * .62, H + 50);
+    const A = spawn('PM', -60, H * .82);
+    const B = spawn('Developer', W + 40, -40);
+    const C = spawn('Reviewer', W + 60, H * .45);
+    const D = spawn('Designer', W * .62, H + 50);
 
     try {
       await Promise.all([
@@ -372,7 +370,7 @@
   // ---- scroll-triggered pieces ---------------------------------------------
   const playOne = async (el) => {
     const ctx = { skip: false, start: now() };
-    const label = el.dataset.cursor || 'React';
+    const label = el.dataset.cursor || 'PM';
     await wait(ctx, Number(el.dataset.cbDelay || 0));
     const r = rectOf(el);
     const cur = spawn(label, innerWidth + 40, clamp(r.top + 40, 20, innerHeight - 20));
