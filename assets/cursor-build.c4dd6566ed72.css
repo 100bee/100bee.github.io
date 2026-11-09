@@ -1,0 +1,31 @@
+/* Cursor build effect. Every hiding rule depends on a class the inline head
+   script adds only when motion is allowed, so the page is complete without it. */
+html.cb-hero [data-cb-group="hero"][data-cb="type"]:not(.cb-live):not(.cb-done),
+html.cb-on [data-cb="type"]:not([data-cb-group]):not(.cb-live):not(.cb-done) { visibility: hidden; }
+html.cb-hero [data-cb-group="hero"]:not([data-cb="type"]):not(.cb-live):not(.cb-done),
+html.cb-on [data-cb="draw"]:not([data-cb-group]):not(.cb-live):not(.cb-done) { opacity: 0; }
+html.cb-on [data-cb].cb-live { transition: opacity .3s ease; }
+html:not(.cb-on) [data-cb-replay] { display: none; }
+
+.cb-layer { position: fixed; inset: 0; z-index: 90; pointer-events: none; overflow: hidden; }
+.cb-cursor { position: absolute; left: 0; top: 0; will-change: transform; }
+.cb-cursor svg { display: block; transform-origin: 2px 2px; transition: transform .12s ease; filter: drop-shadow(0 2px 3px rgb(0 0 0 / .22)); }
+.cb-cursor.is-pressed svg { transform: scale(.86); }
+.cb-label { position: absolute; left: 16px; top: 20px; padding: 4px 9px; border-radius: 3px 999px 999px 999px; color: #fff; white-space: nowrap; font: 500 12px/1.25 "DM Mono", ui-monospace, monospace; letter-spacing: 0; }
+.cb-ring { position: absolute; left: -14px; top: -14px; width: 28px; height: 28px; box-sizing: border-box; border: 2px solid; border-radius: 50%; animation: cb-ring .42s ease-out forwards; }
+@keyframes cb-ring { from { transform: scale(.4); opacity: 1; } to { transform: scale(1.8); opacity: 0; } }
+
+.cb-box, .cb-frame { position: absolute; left: 0; top: 0; box-sizing: border-box; border: 1.5px solid; transition: opacity .25s ease; }
+.cb-box { border-radius: 8px; }
+.cb-frame { background: rgb(194 65 12 / .035); }
+.cb-h { position: absolute; width: 8px; height: 8px; box-sizing: border-box; border: 1.5px solid; background: #fff; opacity: 0; }
+.cb-dim { position: absolute; left: 50%; top: calc(100% + 10px); transform: translateX(-50%); padding: 3px 8px; border-radius: 4px; color: #fff; white-space: nowrap; font: 12px/1.3 "DM Mono", ui-monospace, monospace; opacity: 0; transition: opacity .15s; }
+.cb-frame.is-done .cb-h, .cb-frame.is-done .cb-dim { opacity: 1; }
+
+.cb-r { visibility: hidden; }
+.cb-caret { display: inline-block; width: 2px; height: .82em; margin-right: -2px; vertical-align: -.04em; border-radius: 1px; }
+.cb-pressed { transform: scale(.97); transition: transform .12s ease; }
+
+.cb-skip { position: fixed; right: 24px; top: 104px; z-index: 91; min-height: 44px; padding: 0 18px; border: 1px solid #ccd5e3; border-radius: 999px; background: #fff; color: #3b4555; font: 500 13px "Noto Sans KR", sans-serif; cursor: pointer; box-shadow: 0 8px 24px -16px rgb(12 35 88 / .5); }
+.cb-skip:hover { border-color: #14171e; color: #14171e; }
+.cb-skip:focus-visible { outline: 2px solid #2563eb; outline-offset: 3px; }
