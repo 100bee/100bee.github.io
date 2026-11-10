@@ -63,4 +63,6 @@
     }
   }, { passive: true });
   updateNavigation();
+  // Autoplay only when the visitor has not asked for reduced motion; otherwise the poster stays.
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.querySelectorAll('.cover-video').forEach((v) => { v.autoplay = true; v.play().catch(() => {}); });
 })();
