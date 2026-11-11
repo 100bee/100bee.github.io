@@ -5,11 +5,11 @@ https://100bee.github.io/
 ## 소개 프로젝트
 
 - [ITPT](https://github.com/CSInterviewProject/ITPT_PUBLIC): 음성 답변과 AI 피드백을 연결한 CS 면접 연습
-- [RAGOps Copilot](https://github.com/100bee/rag-ops-copilot): 운영 문서 검색, 출처 확인과 검색 평가
+- [Lawg](https://github.com/100bee/lawg): 게임·커뮤니티 온라인 사건 법령 안내 (구 RAGOps Copilot, 개발 중)
 - [GazeSignal API](https://github.com/100bee/gaze-signal-api): 로컬 웹캠 분석과 REST·WebSocket 이벤트
 - [Chronote](https://github.com/100bee/Chronote): 관심사 기반 AI 매칭과 실시간 채팅
 
-프로젝트 설명은 2026-09-09 공개 README 기준입니다. RAGOps 이미지는 해당 저장소의 실제 실행 화면입니다. 기존 소개·학력·연락처와 Chronote UI 데모를 유지합니다.
+프로젝트 설명은 2026-09-09 공개 README 기준입니다. Lawg 이미지는 저장소의 리포트 화면 시안입니다. 기존 소개·학력·연락처와 Chronote UI 데모를 유지합니다.
 
 ## 실행과 배포 준비
 
