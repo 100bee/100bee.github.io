@@ -85,10 +85,10 @@
           <div class="project-body">
             <div class="project-title-row"><h3 data-cb="type" data-cursor="Reviewer" data-cb-after="#ragops">Lawg</h3><span class="project-kind">개발 중</span></div>
             <p class="project-subtitle" data-cb="type" data-cursor="Intern" data-cb-after="#ragops" data-cb-delay="150">게임·커뮤니티 이용자를 위한 온라인 사건 법령 안내</p>
-            <p class="project-description" data-cb="type" data-cursor="PM" data-cb-after="#ragops" data-cb-delay="300">평소 말투로 적은 사건을 법률 쟁점으로 바꿔 관련 조문을 찾고, 근거가 있을 때만 사건 정리 리포트를 씁니다. 운영 문서로 검증한 RAG 엔진(구 RAGOps Copilot)을 법령 데이터로 옮기는 중입니다.</p>
+            <p class="project-description" data-cb="type" data-cursor="PM" data-cb-after="#ragops" data-cb-delay="300">평소 말투로 적은 사건을 법률 쟁점으로 바꿔 관련 조문을 찾고, 근거가 있을 때만 사건 정리 리포트를 쓰는 서비스를 개발하고 있습니다.</p>
             <ul class="tech-tags" data-cb="type" data-cursor="Developer" data-cb-after="#ragops" data-cb-delay="500" aria-label="Lawg 기술"><li>FastAPI</li><li>pgvector</li><li>Next.js</li><li>Gemini</li></ul>
-            <details class="project-details"><summary>v1 엔진 구현 내용 <span aria-hidden="true">+</span></summary><ul><li>문서 업로드 → 마스킹 → 청킹 → 임베딩 → 검색 파이프라인</li><li>Vector·Keyword·Hybrid 검색 비교와 출처 ID 검증</li><li>문서 12개·질문 20개의 작은 평가셋으로 검색·근거 판정 실험</li><li>Gemini 거절 기준 보정: 범위 밖 질문 거절 0/5 → 3/5</li></ul><p class="detail-note">v1은 가상 운영 장애 문서로 검증했습니다. 법령 리포트 화면은 시안 단계이며, 조문·판례 수집은 아직 시작 전입니다.</p></details>
-            <div class="project-links"><a href="https://github.com/100bee/lawg" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a><a href="https://github.com/100bee/lawg/blob/main/docs/retrieval-experiment-v3-gemini-calibrated.md" target="_blank" rel="noopener noreferrer">거절 기준 실험 <span aria-hidden="true">↗</span></a></div>
+            <details class="project-details"><summary>구현 내용 <span aria-hidden="true">+</span></summary><ul><li>문서 업로드 → 마스킹 → 청킹 → 임베딩 → 검색 파이프라인</li><li>Vector·Keyword·Hybrid 검색 비교 평가 CLI</li><li>검색·답변 두 단계 거절과 출처 ID 검증</li></ul><p class="detail-note">리포트 화면은 시안 단계이며, 조문·판례 수집은 아직 시작 전입니다.</p></details>
+            <div class="project-links"><a href="https://github.com/100bee/lawg" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a><a href="https://github.com/100bee/lawg#리포트-구성" target="_blank" rel="noopener noreferrer">리포트 구성 <span aria-hidden="true">↗</span></a></div>
           </div>
         </article>
         <article class="project-card" id="gaze" data-cb="draw" data-cursor="Reviewer" data-cb-click=".project-links a">

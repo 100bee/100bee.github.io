@@ -5,7 +5,7 @@ https://100bee.github.io/
 ## 소개 프로젝트
 
 - [ITPT](https://github.com/CSInterviewProject/ITPT_PUBLIC): 음성 답변과 AI 피드백을 연결한 CS 면접 연습
-- [Lawg](https://github.com/100bee/lawg): 게임·커뮤니티 온라인 사건 법령 안내 (구 RAGOps Copilot, 개발 중)
+- [Lawg](https://github.com/100bee/lawg): 게임·커뮤니티 온라인 사건 법령 안내 (개발 중)
 - [GazeSignal API](https://github.com/100bee/gaze-signal-api): 로컬 웹캠 분석과 REST·WebSocket 이벤트
 - [Chronote](https://github.com/100bee/Chronote): 관심사 기반 AI 매칭과 실시간 채팅
 
