@@ -11,22 +11,29 @@ https://100bee.github.io/
 
 프로젝트 설명은 2026-09-09 공개 README 기준입니다. Lawg 이미지는 저장소의 리포트 화면 시안입니다. 기존 소개·학력·연락처와 Chronote UI 데모를 유지합니다.
 
+## 버전
+
+- `/` — v2: Three.js 중력 씬(구슬이 모이고 → 떨어지고 → `</>` 모양으로 조립되고 → 화면 밖으로 날아감) 뒤에 프로젝트·이력·연락처
+- `/v1/` — 이전 포트폴리오. 그대로 보관하며 검색 노출은 막아 두었습니다(`noindex`).
+
 ## 실행과 배포 준비
 
 - `npm run dev`: http://127.0.0.1:4173
-- `npm run build`: 내용 해시가 붙은 CSS·JS를 `assets/`에 생성하고 루트 HTML의 참조를 갱신한 뒤, 동일한 공개 파일을 `dist/`에 복사합니다.
+- `npm run build`: 내용 해시가 붙은 CSS·JS를 `assets/`에 생성하고 각 페이지(`index.html`, `v1/index.html`)의 참조를 갱신한 뒤, 동일한 공개 파일을 `dist/`에 복사합니다.
 - GitHub Pages는 기존처럼 `main` 브랜치의 루트에서 배포합니다.
-- 별도 의존성 설치 없이 Python 3와 Node.js 18 이상을 사용합니다.
+- 별도 의존성 설치 없이 Python 3와 Node.js 18 이상을 사용합니다. Three.js는 unpkg CDN에서 불러옵니다.
 
 ## 수정할 소스
 
+v2 (루트)
 - `index.html`: 본문
-- `portfolio.css`: 프로젝트·소개·기술·이력·연락처 스타일
-- `navigation.js`: 메뉴·현재 섹션 표시
-- `hero.css`: 기존 첫 화면에만 적용하는 스타일
-- `hero-motion.js`: 원본 Canvas 애니메이션, 동작 줄이기 및 비활성 화면 정지 로직
-- `itpt-demo/`, `chronote-demo/`: 기존 로고와 UI 데모
+- `gravity.css`: 전체 스타일
+- `gravity.js`: 스크롤 진행도, 스무스 스크롤, WebGL 씬·물리, 팔레트 설정 패널
 
-CSS·JS를 바꾼 뒤에는 반드시 `npm run build`를 실행하고, 갱신된 HTML과 생성된 해시 파일을 함께 반영합니다. 같은 파일명으로 다른 내용이 캐시되는 것을 방지하기 위한 구성입니다. 이전 해시 파일과 루트의 `styles.css`, `script.js`는 이전 HTML을 캐시한 방문자의 화면을 위해 유지합니다. 이 두 루트 파일은 새 디자인의 소스가 아닙니다.
+v1 (`v1/`)
+- `v1/index.html`, `v1/portfolio.css`, `v1/navigation.js`, `v1/hero.css`, `v1/hero-motion.js`, `v1/cursor-build.css`, `v1/cursor-build.js`
+- `itpt-demo/`, `chronote-demo/`: 두 버전이 함께 쓰는 로고와 UI 데모
 
-JavaScript 없이도 본문·링크·구현 내용 펼치기를 사용할 수 있습니다. Google Fonts가 로드되지 않으면 시스템 글꼴을 사용합니다.
+CSS·JS를 바꾼 뒤에는 반드시 `npm run build`를 실행하고, 갱신된 HTML과 생성된 해시 파일을 함께 반영합니다. 같은 파일명으로 다른 내용이 캐시되는 것을 방지하기 위한 구성입니다. 이전 해시 파일과 루트의 `styles.css`, `script.js`는 이전 HTML을 캐시한 방문자의 화면을 위해 유지합니다.
+
+JavaScript나 WebGL이 없어도(또는 CDN이 막혀도) 7초 뒤 씬 없이 본문·링크·구현 내용 펼치기를 사용할 수 있습니다. `prefers-reduced-motion` 환경에서는 스무스 스크롤과 등장 애니메이션을 끕니다.
