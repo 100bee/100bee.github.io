@@ -109,8 +109,12 @@ body.in-content #header::before,.no-scene body #header::before{opacity:1}
 .glass-btn:hover{background:rgba(255,255,255,0.3)}
 .glass-btn svg{width:16px;height:16px}
 .no-scene #open-controls,html:not(.js) #open-controls,.no-scene .scene-only{display:none}
-.hdr-contact{font-family:var(--font-raleway);font-size:14px;font-weight:500;color:var(--n950);padding:10px 4px;transition:opacity .25s}
-.hdr-contact:hover{opacity:.6}
+.hdr-cta{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 14px 0 16px;border-radius:999px;background:var(--n950);color:#fff;
+  font-family:var(--font-raleway);font-size:13px;font-weight:600;letter-spacing:-0.01em;white-space:nowrap;
+  box-shadow:0 6px 18px -8px rgba(10,10,10,0.45);transition:background .25s var(--ease-out), box-shadow .25s var(--ease-out)}
+.hdr-cta svg{width:14px;height:14px;transition:transform .3s var(--ease-out)}
+.hdr-cta:hover{background:var(--accent);box-shadow:0 8px 22px -8px color-mix(in srgb, var(--accent) 60%, transparent)}
+.hdr-cta:hover svg{transform:translate(2px,-2px)}
 .orb{border-radius:999px;background:var(--orb);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .35s var(--ease-out)}
 
 /* ---------- Scene sections ---------- */
@@ -319,6 +323,9 @@ footer{position:relative;z-index:10;margin-top:72px;background:var(--n950);color
 .reset svg{width:14px;height:14px}
 
 /* ---------- Breakpoints ---------- */
+@media (max-width:379px){
+  .wordmark{font-size:13px;letter-spacing:0.16em}
+}
 @media (min-width:420px){
   .wordmark{font-size:16px}
 }
@@ -336,7 +343,7 @@ footer{position:relative;z-index:10;margin-top:72px;background:var(--n950);color
   #header{height:96px;padding:0 48px}
   .wordmark{font-size:18px}
   .nav{display:flex}
-  .hdr-contact{display:none}
+  .hdr-cta{height:44px;padding:0 18px 0 20px;font-size:14px}
   .hdr-right{gap:12px}
   .glass-btn{width:44px;height:44px}
     #hero{padding:0 48px 56px}
