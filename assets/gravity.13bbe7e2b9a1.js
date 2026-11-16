@@ -10,20 +10,33 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').match
 const SHAPE_TEXT = '</>';
 
 /* ================= Themes ================= */
+// Each theme stays inside one color family; the scene moves hero → about → approach
+// within it. Roles: [pastel, light, medium, deep, glass]. Page colors live in CSS
+// under [data-theme].
 const THEMES = [
-  { id: 'royalBlue',  name: 'Royal Blue & Pearl',   description: '흰 슬레이트 그라데이션 위의 코발트 구슬', primaryColor: '#2F69FF', ballColor: '#2F69FF',
-    heroBg: 'radial-gradient(circle at center, #ffffff 0%, #ecefff 35%, #c2d1ff 100%)' },
-  { id: 'pinkBlush',  name: 'Rose Blush & Crème',   description: '펄 스튜디오의 캔디 핑크와 딸기빛 포인트', primaryColor: '#FFA6B3', ballColor: '#FFC5C2',
-    heroBg: 'radial-gradient(circle at center, #ffffff 0%, #fff5f4 35%, #ffd6dc 100%)' },
-  { id: 'voltLime',   name: 'Volt Lime & Slate',    description: '깨끗한 지평선 위의 네온 볼트 라임', primaryColor: '#E1FC03', ballColor: '#E1FC03',
-    heroBg: 'radial-gradient(circle at center, #ffffff 0%, #fbffe5 35%, #eefcb0 100%)' },
-  { id: 'arcticBlue', name: 'Arctic Sky & Crystal', description: '투명한 유리 광택의 차가운 아틱 블루', primaryColor: '#96E5FF', ballColor: '#96E5FF',
-    heroBg: 'radial-gradient(circle at center, #ffffff 0%, #f0f9ff 35%, #c9f1ff 100%)' },
+  { id: 'blue', name: 'Cobalt', description: '코발트 → 스카이 → 네이비 (기본)',
+    pal: { hero:     ['#ECEFFF', '#A8C1FF', '#2F69FF', '#0A33BF', '#4D80FF'],
+           about:    ['#F2F8FF', '#CFE6FF', '#7FB8FF', '#3D8BFF', '#9CCBFF'],
+           approach: ['#C9D3F2', '#6F86D6', '#24379E', '#0F1B5C', '#3B52C4'] } },
+  { id: 'rose', name: 'Rose', description: '로즈 → 블러시 → 라즈베리',
+    pal: { hero:     ['#FFF0F2', '#FFC2CD', '#FF6F8E', '#D93A63', '#FF8FA8'],
+           about:    ['#FFF7F5', '#FFE0DA', '#FFB3A8', '#F08A80', '#FFC4BC'],
+           approach: ['#F5D3DC', '#D9738F', '#A3264B', '#6B1230', '#C23B62'] } },
+  { id: 'green', name: 'Sage', description: '세이지 → 민트 → 포레스트',
+    pal: { hero:     ['#EEF9F1', '#A9E3BC', '#3DBB72', '#1E8A4C', '#5FD08F'],
+           about:    ['#F6FCF2', '#DDF3CF', '#A8DE8C', '#6FBF55', '#BDE8A6'],
+           approach: ['#CFE3D6', '#5E9C78', '#1F5C3C', '#0E3322', '#2F7A52'] } },
+  { id: 'mono', name: 'Mono', description: '실버 → 화이트 → 차콜, 파랑은 글자에만',
+    pal: { hero:     ['#FFFFFF', '#E6E8EC', '#B9BEC7', '#7D838E', '#DADDE3'],
+           about:    ['#FFFFFF', '#F1F2F4', '#D5D8DD', '#A5AAB3', '#E8EAEE'],
+           approach: ['#C9CCD2', '#6B707A', '#33363D', '#141518', '#4A4E57'] } },
 ];
 const themesEl = document.getElementById('themes');
 themesEl.innerHTML = THEMES.map(t => `
   <button class="theme" data-id="${t.id}" type="button">
-    <div class="theme-top"><span class="theme-name">${t.name}</span><span class="swatch" style="background:${t.primaryColor}"></span></div>
+    <div class="theme-top"><span class="theme-name">${t.name}</span><span class="swatches">${
+      ['hero', 'about', 'approach'].map(k => `<span class="swatch" style="background:${t.pal[k][2]}"></span>`).join('')
+    }</span></div>
     <div class="theme-desc">${t.description}</div>
   </button>`).join('');
 
@@ -94,7 +107,7 @@ let stageTops = [];
 const measureStages = () => { stageTops = stageEls.map(el => el.getBoundingClientRect().top + window.scrollY); };
 measureStages();
 
-const bgLayers = ['bg-hero', 'bg-lime', 'bg-pink', 'bg-light'].map(id => document.getElementById(id));
+const bgLayers = ['bg-hero', 'bg-about', 'bg-approach', 'bg-light'].map(id => document.getElementById(id));
 let bgStage = 0;
 const setBgStage = (s) => {
   if (s === bgStage) return;
@@ -150,7 +163,7 @@ window.addEventListener('keydown', e => { if (e.key === 'Escape' && drawerOpen) 
 /* ================= WebGL scene ================= */
 const sceneContainer = document.getElementById('scene');
 
-function createGravityScene(container, ballColor, onReady) {
+function createGravityScene(container, theme, onReady) {
   const canvas = document.createElement('canvas');
   container.appendChild(canvas);
 
@@ -166,7 +179,7 @@ function createGravityScene(container, ballColor, onReady) {
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-  const hemiLight = new THREE.HemisphereLight(0xffffff, new THREE.Color(ballColor), 1.6);
+  const hemiLight = new THREE.HemisphereLight(0xffffff, new THREE.Color(theme.pal.hero[2]), 1.6);
   scene.add(hemiLight);
 
   const keyLight = new THREE.DirectionalLight(0xffffff, 1.4);
@@ -210,33 +223,14 @@ function createGravityScene(container, ballColor, onReady) {
   const ballCount = isMobile ? 64 : 104;
 
   // --- Palette ---
-  const getDynamicColors = (baseColor) => {
-    const hex = baseColor.toLowerCase();
-    if (hex === '#e1fc03') {
-      return { pastel: new THREE.Color('#FBFFE2'), light: new THREE.Color('#EFFE69'),
-        medium: new THREE.Color('#E1FC03'), deep: new THREE.Color('#B1E200'), glass: new THREE.Color('#DCFF32') };
-    } else if (hex === '#ffc5c2' || hex === '#ffa19e') {
-      return { pastel: new THREE.Color('#FFF5F4'), light: new THREE.Color('#FFECEB'),
-        medium: new THREE.Color('#FFA6B3'), deep: new THREE.Color('#FF4D6D'), glass: new THREE.Color('#FFA6B3') };
-    } else if (hex === '#96e5ff') {
-      return { pastel: new THREE.Color('#F0F9FF'), light: new THREE.Color('#C9F1FF'),
-        medium: new THREE.Color('#96E5FF'), deep: new THREE.Color('#2BA5FF'), glass: new THREE.Color('#98E4FF') };
-    } else if (hex === '#2f69ff') {
-      return { pastel: new THREE.Color('#ECEFFF'), light: new THREE.Color('#A8C1FF'),
-        medium: new THREE.Color('#2F69FF'), deep: new THREE.Color('#0A33BF'), glass: new THREE.Color('#4D80FF') };
-    }
-    const c = new THREE.Color(baseColor);
-    return { pastel: c.clone().offsetHSL(0, -0.15, 0.25), light: c.clone().offsetHSL(0, -0.05, 0.12),
-      medium: c.clone(), deep: c.clone().offsetHSL(0.01, 0.1, -0.12), glass: c.clone() };
-  };
-
-  const palette = getDynamicColors(ballColor);
-  const palHero = palette;
-  const palLime = getDynamicColors('#E1FC03');
-  const palPink = getDynamicColors('#FFC5C2');
   const ROLES = ['pastel', 'light', 'medium', 'deep', 'glass'];
-  const curPal = { pastel: new THREE.Color(), light: new THREE.Color(), medium: new THREE.Color(),
-    deep: new THREE.Color(), glass: new THREE.Color() };
+  const toPal = (arr) => Object.fromEntries(ROLES.map((r, i) => [r, new THREE.Color(arr[i])]));
+  const stage = {};
+  const applyTheme = (t) => { stage.hero = toPal(t.pal.hero); stage.about = toPal(t.pal.about); stage.approach = toPal(t.pal.approach); };
+  applyTheme(theme);
+  const palette = stage.hero;
+  const wantPal = toPal(theme.pal.hero);   // where the colors should be for this scroll position
+  const curPal = toPal(theme.pal.hero);    // what is shown; eases toward wantPal (smooth theme swaps)
 
   // --- Spheres ---
   const sphereGeometry = new THREE.SphereGeometry(1, 48, 48);
@@ -474,10 +468,13 @@ function createGravityScene(container, ballColor, onReady) {
     const shapeF = smoothstep(1.40, 2.05, progress) * (1 - smoothstep(2.55, 3.0, progress));
     const dropF = dropRaw * (1 - smoothstep(1.25, 1.75, progress));
 
-    // --- scroll-driven palette morph: hero → volt-lime → rose-pink ---
-    const bLime = smoothstep(0.55, 1.05, progress);
-    const bPink = smoothstep(1.40, 1.95, progress);
-    for (const role of ROLES) curPal[role].copy(palHero[role]).lerp(palLime[role], bLime).lerp(palPink[role], bPink);
+    // --- scroll-driven palette morph inside the theme: hero → about → approach ---
+    const bAbout = smoothstep(0.55, 1.05, progress);
+    const bApproach = smoothstep(1.40, 1.95, progress);
+    for (const role of ROLES) {
+      wantPal[role].copy(stage.hero[role]).lerp(stage.about[role], bAbout).lerp(stage.approach[role], bApproach);
+      curPal[role].lerp(wantPal[role], 0.12);
+    }
     hemiLight.groundColor.copy(curPal.medium);
 
     const entranceT = easeOutCubic(clamp01((time - entranceStart) / 2.2));
@@ -560,6 +557,7 @@ function createGravityScene(container, ballColor, onReady) {
       const c = b.isGlass ? curPal.glass : curPal[b.role];
       b.material.color.copy(c);
       b.material.emissive.copy(c);
+      if (b.isGlass) b.material.attenuationColor.copy(curPal.pastel);
 
       b.material.opacity = flyF > 0.001 ? 1 - smoothstep(camZ - 2.6, camZ - 0.3, b.position.z) : 1;
       if (b.material.opacity > 0.002) allGone = false;
@@ -658,8 +656,9 @@ function createGravityScene(container, ballColor, onReady) {
   const ro = new ResizeObserver(handleResize);
   ro.observe(container);
 
-  // --- Teardown (used when the palette re-keys the scene) ---
-  return () => {
+  return {
+    setTheme: (t) => { applyTheme(t); if (parked) parked = false; },
+    dispose: () => {
     cancelAnimationFrame(animationFrameId);
     ro.disconnect();
     for (const b of balls) b.material.dispose();
@@ -667,29 +666,23 @@ function createGravityScene(container, ballColor, onReady) {
     renderer.dispose();
     renderer.forceContextLoss();
     canvas.remove();
+    },
   };
 }
 
-/* ================= Theme selection (re-keys the scene) ================= */
-const DEFAULT_THEME = 'royalBlue';
+/* ================= Theme selection ================= */
+const DEFAULT_THEME = 'blue';
 const THEME_KEY = 'jiseok-portfolio-theme';
-let selectedTheme = null;
-let disposeScene = null;
+let sceneApi = null;
 let sceneReady = false;
 
-const mountScene = (color) => {
-  if (disposeScene) disposeScene();
-  disposeScene = createGravityScene(sceneContainer, color, () => { sceneReady = true; });
-};
-
-const setTheme = (id) => {
+const setTheme = (id, { save = true } = {}) => {
   const t = THEMES.find(x => x.id === id) || THEMES[0];
+  document.documentElement.setAttribute('data-theme', t.id);
   themesEl.querySelectorAll('.theme').forEach(el => el.classList.toggle('sel', el.dataset.id === t.id));
-  bgLayers[0].style.background = t.heroBg;
-  try { localStorage.setItem(THEME_KEY, t.id); } catch (e) {}
-  if (t.id === selectedTheme && disposeScene) return;
-  selectedTheme = t.id;
-  mountScene(t.ballColor);
+  if (save) { try { localStorage.setItem(THEME_KEY, t.id); } catch (e) {} }
+  if (sceneApi) sceneApi.setTheme(t);
+  return t;
 };
 themesEl.addEventListener('click', (e) => {
   const btn = e.target.closest('.theme');
@@ -699,8 +692,9 @@ document.getElementById('reset-theme').addEventListener('click', () => setTheme(
 
 let savedTheme = DEFAULT_THEME;
 try { savedTheme = localStorage.getItem(THEME_KEY) || DEFAULT_THEME; } catch (e) {}
+const initialTheme = setTheme(savedTheme, { save: false });
 try {
-  setTheme(savedTheme);
+  sceneApi = createGravityScene(sceneContainer, initialTheme, () => { sceneReady = true; });
 } catch (err) {
   // No WebGL (or the context could not be created): show the page without the scene.
   console.warn('[gravity] scene disabled:', err);

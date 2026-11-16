@@ -14,13 +14,14 @@
   { "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
   </script>
   <link rel="modulepreload" href="https://unpkg.com/three@0.160.0/build/three.module.js" crossorigin>
-  <link rel="stylesheet" href="./assets/gravity.3168a5ebb6e6.css">
+  <link rel="stylesheet" href="./assets/gravity.2d9fab5a53fd.css">
   <script>
   // Boot: hide content behind the loader only when JS runs. If the WebGL module
   // never arrives (CDN blocked, old browser), reveal the page without the scene.
   (function () {
     var d = document.documentElement;
     d.classList.add('js', 'is-loading');
+    try { var t = localStorage.getItem('jiseok-portfolio-theme'); if (/^(blue|rose|green|mono)$/.test(t)) d.setAttribute('data-theme', t); } catch (e) {}
     try { if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch (e) {}
     window.__gravityReveal = function (withoutScene) {
       if (window.__gravityRevealed) return;
@@ -36,15 +37,15 @@
     window.__gravityTimer = setTimeout(function () { window.__gravityReveal(true); }, 7000);
   })();
   </script>
-  <script type="module" src="./assets/gravity.1892648c7088.js"></script>
+  <script type="module" src="./assets/gravity.13bbe7e2b9a1.js"></script>
 </head>
 <body>
 <a class="skip-link" href="#about">본문으로 건너뛰기</a>
 
 <div id="bg" aria-hidden="true">
   <div class="layer on" id="bg-hero"></div>
-  <div class="layer" id="bg-lime"></div>
-  <div class="layer" id="bg-pink"></div>
+  <div class="layer" id="bg-about"></div>
+  <div class="layer" id="bg-approach"></div>
   <div class="layer" id="bg-light"></div>
 </div>
 
@@ -62,8 +63,8 @@
     <a href="#about">About</a><a href="#work">Work</a><a href="#journey">Journey</a><a href="#contact">Contact</a><a href="./v1/" class="nav-v1">v1</a>
   </nav>
   <div class="hdr-right">
-    <button class="glass-btn" id="open-controls" aria-label="장면 설정 열기"><i data-icon="sliders"></i></button>
-    <a href="mailto:wjdwltjr3939@naver.com" class="contact-pill"><span class="cp-text">연락하기</span><span class="orb"><i data-icon="chevron-right"></i></span></a>
+    <button class="glass-btn" id="open-controls" aria-label="색 테마 바꾸기"><i data-icon="sliders"></i></button>
+    <a href="#contact" class="hdr-contact">Contact</a>
   </div>
 </header>
 
@@ -274,12 +275,12 @@
 <div id="scrim"></div>
 <aside id="drawer" aria-hidden="true" aria-labelledby="drawer-title">
   <div class="dr-head">
-    <div class="dr-title" id="drawer-title"><i data-icon="sliders"></i>Scene Controls</div>
+    <div class="dr-title" id="drawer-title"><i data-icon="sliders"></i>Color theme</div>
     <button class="dr-close" id="close-controls" aria-label="닫기"><i data-icon="x"></i></button>
   </div>
-  <p class="dr-note">첫 화면 구슬의 팔레트를 고릅니다. 스크롤하면 장면이 라임, 핑크로 바뀌고 구슬이 코드 기호로 모입니다.</p>
+  <p class="dr-note">사이트 전체의 색 계열을 고릅니다. 고른 계열 안에서 스크롤에 따라 구슬과 배경의 밝기가 바뀝니다.</p>
   <div class="dr-sec">
-    <div class="dr-sec-t"><i data-icon="sparkles"></i>Hero palette</div>
+    <div class="dr-sec-t"><i data-icon="sparkles"></i>Palette</div>
     <div class="themes" id="themes"></div>
   </div>
   <div class="dr-foot">
