@@ -41,7 +41,7 @@ for (const page of pages) {
   await writeFile(page.html, html);
 }
 
-const publicFiles = ['index.html', 'styles.css', 'script.js', 'assets', 'itpt-demo', 'chronote-demo', 'v1/index.html'];
+const publicFiles = ['index.html', 'styles.css', 'script.js', 'assets', 'itpt-demo', 'chronote-demo', 'christmas', 'v1/index.html'];
 for (const file of publicFiles) await access(file);
 await rm('dist', { recursive: true, force: true });
 await mkdir('dist', { recursive: true });

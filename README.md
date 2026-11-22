@@ -15,6 +15,7 @@ https://100bee.github.io/
 
 - `/` — v2: Three.js 중력 씬(구슬이 모이고 → 떨어지고 → `</>` 모양으로 조립되고 → 화면 밖으로 날아감) 뒤에 프로젝트·이력·연락처
 - `/v1/` — 이전 포트폴리오. 그대로 보관하며 검색 노출은 막아 두었습니다(`noindex`).
+- `/christmas/` — ASCII 크리스마스 트리 토이 프로젝트. 파일 하나(`christmas/index.html`)로 동작하며 빌드 과정이 필요 없습니다. 방명록은 방문자 브라우저(localStorage)에만 저장되고, 페이지에 넣은 DejaVu Sans Mono 폰트의 라이선스는 `christmas/FONT-LICENSE.txt`에 있습니다.
 
 ## 실행과 배포 준비
 
