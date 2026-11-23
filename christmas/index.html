@@ -154,6 +154,7 @@ body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 var(-
 #wish-form .orn-colors button { width: 28px; min-height: 0; height: 28px; padding: 0; border: 2px solid rgba(0, 0, 0, 0.15);
   border-radius: 50%; cursor: pointer; }
 #wish-form .orn-shapes button:focus-visible, #wish-form .orn-colors button:focus-visible { outline: 2px solid #2b231f; outline-offset: 2px; }
+.wish-privacy { margin: 6px 0 0; font-size: 12px; line-height: 1.4; color: #8a7c70; }
 #wish-note { margin: 6px 0 0; min-height: 0; font-size: 13px; color: #9a4a2a; }
 #wish-note:empty { display: none; }
 #wish-msg { margin: 6px 0 0; font-size: 13px; color: #b03a2e; }
@@ -243,6 +244,7 @@ body > footer b { font-family: var(--mono); color: var(--ink); }
       <div id="orn-shapes" class="orn-shapes" role="radiogroup" aria-label="장식 모양"></div>
       <div id="orn-colors" class="orn-colors" role="radiogroup" aria-label="장식 색"></div>
       <textarea id="wish-text" maxlength="80" rows="3" placeholder="인사나 크리스마스 소원을 남겨주세요"></textarea>
+      <p class="wish-privacy">욕설, 도배 방지를 위해 글을 남기면 작성자 IP가 저장돼요.</p>
       <p id="wish-note"></p>
       <p id="wish-msg" role="status"></p>
       <div class="row"><span id="wish-left">0/80</span>
