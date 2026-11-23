@@ -83,6 +83,17 @@ body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 var(-
   color: #2a1d00; font: 700 15px var(--sans); cursor: pointer; }
 #board-write:focus-visible, #wish-form button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 #wish-status { margin: 22px 0 18px; color: var(--muted); font-size: 15px; }
+#admin-bar { margin: 0 0 18px; padding: 12px 14px; border: 1px dashed rgba(255, 255, 255, 0.25);
+  border-radius: 12px; color: var(--muted); font-size: 14px; }
+#admin-bar[hidden], #admin-form[hidden], #admin-on[hidden] { display: none; }
+#admin-form { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+#admin-form input { flex: 1 1 180px; min-height: 40px; padding: 0 12px; border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px; background: rgba(255, 255, 255, 0.06); color: inherit; font: 15px var(--sans); }
+#admin-bar button { min-height: 40px; padding: 0 16px; border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px; background: transparent; color: inherit; font: 600 14px var(--sans); cursor: pointer; }
+#admin-on b { color: #fff; }
+#admin-on button { margin-left: 8px; }
+.wish footer button.admin-del { border-color: #c0392b; color: #c0392b; }
 #wish-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(230px, 100%), 1fr)); gap: 18px; }
 .wish { position: relative; margin: 0; padding: 22px 18px 14px; border-radius: 6px; color: #2b231f;
   background: #fff6e4; box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35); transform: rotate(-0.8deg); }
@@ -207,6 +218,16 @@ body > footer b { font-family: var(--mono); color: var(--ink); }
       <button id="board-write" type="button">방명록 남기기</button>
     </div>
     <p id="wish-status" aria-live="polite"></p>
+    <div id="admin-bar" hidden>
+      <form id="admin-form">
+        <input id="admin-email" type="email" autocomplete="username" placeholder="관리자 이메일" aria-label="관리자 이메일" required>
+        <input id="admin-pass" type="password" autocomplete="current-password" placeholder="비밀번호" aria-label="비밀번호" required>
+        <button type="submit">관리자 로그인</button>
+        <span id="admin-msg" aria-live="polite"></span>
+      </form>
+      <div id="admin-on" hidden>관리자 모드 · <b id="admin-who"></b> — 모든 글에 삭제 버튼이 보여요.
+        <button id="admin-out" type="button">로그아웃</button></div>
+    </div>
     <div id="wish-list"></div>
   </div>
 </section>
@@ -1551,30 +1572,63 @@ function pick_tree(x, y) {     // the nearest letter on the tree's facing side
 
 // ------------------------------------------------------------------ wishes
 // The guestbook: notes hang on the tree as gold letters and now and then
-// streak across the sky. They are kept in this browser only (localStorage).
+// streak across the sky. They live in a shared Supabase table, so every
+// visitor sees the same notes.
 const WISH_MAX = 30, WISH_LEN = 80, NAME_LEN = 12, WISH_TAG = rgb(255, 222, 140);
-const WISH_KEY = "xmas100bee.wishes", NAME_KEY = "xmas100bee.name";
+const NAME_KEY = "xmas100bee.name", MINE_KEY = "xmas100bee.mine";
 const name_of = w => w.name || "익명";
 
-// Where the guestbook lives. Each entry is { id, name, text, at }, the same
-// shape a table row would have, so a shared store (Supabase, say) can take
-// over by giving these three functions the same answers.
+// Where the guestbook lives: the public.wishes table, read and written through
+// Supabase's REST API. Each entry comes back as { id, name, text, at, mine }.
+// Every note written here gets a secret owner token that only this browser
+// keeps (localStorage); the delete_wish function only takes a note down when
+// it is handed that token, so nobody can remove someone else's note.
+const SUPABASE_URL = "https://wcpfglkaistuidbnxmdq.supabase.co";
+const SUPABASE_KEY = "sb_publishable_eupWYRQLSZNgsnXjwBTgcA_1seg_9cf";   // publishable (anon) key: safe to publish. Never the secret key.
 const STORE = {
-  async load() {
-    const saved = JSON.parse(localStorage.getItem(WISH_KEY) || "[]");
-    return saved.filter(w => w && typeof w.text === "string" && typeof w.id === "string")
-      .map(w => ({ id: w.id, name: typeof w.name === "string" ? w.name.slice(0, NAME_LEN) : "",
-        text: w.text.slice(0, WISH_LEN), at: +w.at || 0 }));
+  async _call(path, init = {}) {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, { ...init,
+      headers: { apikey: SUPABASE_KEY, "Content-Type": "application/json", ...init.headers } });
+    if (!res.ok) throw new Error(`supabase ${res.status}`);
+    const body = await res.text();
+    return body ? JSON.parse(body) : null;
   },
-  async add(w) { STORE._write([w, ...STORE._read().filter(x => x.id !== w.id)]); },
-  async remove(id) { STORE._write(STORE._read().filter(x => x.id !== id)); },
-  _read() { try { return JSON.parse(localStorage.getItem(WISH_KEY) || "[]"); } catch (e) { return []; } },
-  _write(list) {
-    try { localStorage.setItem(WISH_KEY, JSON.stringify(list.slice(0, WISH_MAX))); }
-    catch (e) { /* private browsing: notes last until the tab closes */ }
+  async load() {
+    const rows = await STORE._call(
+      `wishes?select=id,name,text,created_at&order=created_at.desc&limit=${WISH_MAX}`);
+    const mine = STORE._mine();
+    return rows.map(r => ({ id: r.id, name: (r.name || "").slice(0, NAME_LEN),
+      text: r.text.slice(0, WISH_LEN), at: Date.parse(r.created_at) || 0, mine: r.id in mine }));
+  },
+  async add(w) {
+    const token = crypto.randomUUID();
+    STORE._mine({ ...STORE._mine(), [w.id]: token });
+    await STORE._call("wishes", { method: "POST", headers: { Prefer: "return=minimal" },
+      body: JSON.stringify({ id: w.id, name: w.name, text: w.text, owner_token: token }) });
+  },
+  async remove(id, asAdmin) {
+    const mine = STORE._mine();
+    if (asAdmin || !mine[id]) {        // admin: plain DELETE, allowed only by the admins policy
+      if (!ADMIN.token) throw new Error("admin");
+      const gone = await STORE._call(`wishes?id=eq.${encodeURIComponent(id)}&select=id`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${ADMIN.token}`, Prefer: "return=representation" } });
+      if (!gone || !gone.length) throw new Error("admin");
+      return;
+    }
+    await STORE._call("rpc/delete_wish", { method: "POST",
+      body: JSON.stringify({ p_id: id, p_token: mine[id] }) });
+    delete mine[id];
+    STORE._mine(mine);
+  },
+  _mine(set) {                       // { wish id: owner token } for notes written here
+    try {
+      if (set) localStorage.setItem(MINE_KEY, JSON.stringify(set));
+      else return JSON.parse(localStorage.getItem(MINE_KEY) || "{}");
+    } catch (e) { return {}; }
   },
 };
-const WISH = { list: [], flights: [], spots: [], landed: {}, meteors: [],
+const WISH = { list: [], flights: [], spots: [], landed: {}, meteors: [], offline: false,
   nextFall: 2.5 };
 
 function wish_hash(s) {
@@ -1769,13 +1823,22 @@ function meteor_hit(x, y) {          // the head or any letter still glowing
   return null;
 }
 
-async function wishes_setup() {      // read what the store kept last time
+async function wishes_refresh(fly) {  // fetch the shared notes; fly in ones we haven't seen
   try {
-    WISH.list = (await STORE.load()).map(w => ({ ...w, by: "me" })).sort((p, q) => q.at - p.at);
+    const seen = new Set(WISH.list.map(w => w.id));
+    WISH.list = (await STORE.load()).map(w => ({ ...w, by: "guest" })).sort((p, q) => q.at - p.at);
+    WISH.offline = false;
+    if (fly) for (const w of WISH.list)
+      if (!seen.has(w.id)) WISH.flights.push({ id: w.id, t0: S.clock, sx: L.w * (0.15 + 0.7 * Math.random()) });
   } catch (e) {
-    WISH.list = [];
+    WISH.offline = true;
   }
   render_board();
+}
+
+async function wishes_setup() {
+  await wishes_refresh(false);
+  setInterval(() => { if (document.visibilityState === "visible") wishes_refresh(true); }, 60000);
 }
 
 function post_wish(text, name = "") {   // hang a new note on the tree
@@ -1784,18 +1847,94 @@ function post_wish(text, name = "") {   // hang a new note on the tree
   if (!text) return false;
   const w = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), name, text,
     at: Date.now() };
-  WISH.list = [{ ...w, by: "me" }, ...WISH.list].slice(0, WISH_MAX);
-  STORE.add(w).catch(() => {});
+  WISH.list = [{ ...w, by: "guest", mine: true }, ...WISH.list].slice(0, WISH_MAX);
+  STORE.add(w).catch(() => {
+    WISH.list = WISH.list.filter(x => x.id !== w.id);
+    WISH.offline = true;
+    render_board();
+  });
   render_board();
   WISH.flights.push({ id: w.id, t0: S.clock, sx: L.w * (0.15 + 0.7 * Math.random()) });
   trace("post_wish");
   return true;
 }
 
-function delete_wish(w) {            // take a note down again
+function delete_wish(w) {            // take a note down again (own note, or any note as admin)
+  if (!w.mine && !confirm(`관리자 권한으로 이 글을 삭제할까요?\n\n"${w.text}"`)) return;
   WISH.list = WISH.list.filter(x => x.id !== w.id);
-  STORE.remove(w.id).catch(() => {});
   render_board();
+  STORE.remove(w.id, !w.mine).catch(e => {
+    alert(e.message === "admin" ? "삭제할 권한이 없어요. 다시 로그인해 주세요." : "삭제하지 못했어요. 잠시 후 다시 시도해 주세요.");
+    wishes_refresh(false);
+  });
+}
+
+// ------------------------------------------------------------------ admin
+// Open the page with #admin to get a login form. The admin signs in with a
+// Supabase Auth account; the database's delete policy only lets user ids in
+// public.admins remove notes, so the form itself grants nothing.
+const ADMIN_KEY = "xmas100bee.admin";
+const ADMIN = {
+  token: null, email: "",
+  restore() {
+    try {
+      const s = JSON.parse(sessionStorage.getItem(ADMIN_KEY) || "null");
+      if (s && s.exp > Date.now()) { ADMIN.token = s.token; ADMIN.email = s.email; }
+    } catch (e) {}
+  },
+  async login(email, password) {
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, { method: "POST",
+      headers: { apikey: SUPABASE_KEY, "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }) });
+    if (!res.ok) throw new Error("login");
+    const s = await res.json();
+    ADMIN.token = s.access_token;
+    ADMIN.email = (s.user && s.user.email) || email;
+    try {
+      sessionStorage.setItem(ADMIN_KEY, JSON.stringify({ token: ADMIN.token, email: ADMIN.email,
+        exp: Date.now() + ((s.expires_in || 3600) - 60) * 1000 }));
+    } catch (e) {}
+  },
+  logout() {
+    if (ADMIN.token) fetch(`${SUPABASE_URL}/auth/v1/logout`, { method: "POST",
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${ADMIN.token}` } }).catch(() => {});
+    ADMIN.token = null;
+    ADMIN.email = "";
+    try { sessionStorage.removeItem(ADMIN_KEY); } catch (e) {}
+  },
+};
+
+function admin_ui() {
+  ADMIN.restore();
+  const bar = document.getElementById("admin-bar"), form = document.getElementById("admin-form");
+  const on = document.getElementById("admin-on"), msg = document.getElementById("admin-msg");
+  const show = () => {
+    bar.hidden = !(ADMIN.token || location.hash === "#admin");
+    form.hidden = !!ADMIN.token;
+    on.hidden = !ADMIN.token;
+    document.getElementById("admin-who").textContent = ADMIN.email;
+    render_board();
+  };
+  form.onsubmit = async e => {
+    e.preventDefault();
+    const pass = document.getElementById("admin-pass");
+    msg.textContent = "로그인 중…";
+    try {
+      await ADMIN.login(document.getElementById("admin-email").value.trim(), pass.value);
+      msg.textContent = "";
+    } catch (err) {
+      msg.textContent = "이메일이나 비밀번호가 맞지 않아요.";
+    }
+    pass.value = "";
+    show();
+  };
+  document.getElementById("admin-out").onclick = () => {
+    ADMIN.logout();
+    if (location.hash === "#admin") history.replaceState(null, "", location.pathname + location.search);
+    show();
+  };
+  window.addEventListener("hashchange", show);
+  show();
 }
 
 function when(t) {
@@ -1811,8 +1950,9 @@ function render_board() {
   const list = document.getElementById("wish-list"), status = document.getElementById("wish-status");
   if (!list) return;
   const n = WISH.list.length;
-  status.textContent = (n ? `${n}개의 글이 트리에 걸려 있어요. ` : "")
-    + "방명록은 이 브라우저에만 저장돼요.";
+  status.textContent = WISH.offline
+    ? "방명록 서버에 연결하지 못했어요. 잠시 후 새로고침해 주세요."
+    : (n ? `${n}개의 글이 트리에 걸려 있어요. ` : "") + "모두가 함께 보는 방명록이에요.";
   list.textContent = "";
   if (!n) {
     const empty = document.createElement("p");
@@ -1829,11 +1969,15 @@ function render_board() {
     p.textContent = w.text;
     who.textContent = name_of(w);
     t.textContent = when(w.at);
-    del.type = "button";
-    del.textContent = "떼기";
-    del.title = "이 글을 트리에서 떼기";
-    del.onclick = () => delete_wish(w);
-    foot.append(who, t, del);
+    foot.append(who, t);
+    if (w.mine || ADMIN.token) {     // own notes, or every note for the admin
+      del.type = "button";
+      del.textContent = w.mine ? "떼기" : "삭제";
+      del.title = w.mine ? "이 글을 트리에서 떼기" : "관리자: 이 글 삭제";
+      if (!w.mine) del.className = "admin-del";
+      del.onclick = () => delete_wish(w);
+      foot.append(del);
+    }
     card.append(p, foot);
     list.append(card);
   }
@@ -2614,6 +2758,7 @@ async function main() {
   new ResizeObserver(resize).observe(CANVAS);
   input_setup();
   wish_ui();
+  admin_ui();
   wishes_setup();
   const lightBtn = document.getElementById("btn-light"), snowBtn = document.getElementById("btn-snow");
   const carolBtn = document.getElementById("btn-carol");
