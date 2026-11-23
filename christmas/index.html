@@ -142,6 +142,18 @@ body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 var(-
 #wish-name { width: 100%; margin-bottom: 8px; padding: 10px 12px; border: 1px solid #d9cbb6; border-radius: 10px;
   background: #fffdf8; color: #2b231f; font: 600 16px/1.4 var(--sans); }
 #wish-text:focus, #wish-name:focus { outline: 2px solid var(--gold); border-color: transparent; }
+.orn-label { margin: 2px 0 6px; font-size: 13px; font-weight: 600; color: #5a4d45; }
+.orn-label span { font-weight: 400; color: #8a7c70; }
+.orn-shapes { display: flex; flex-wrap: wrap; gap: 5px; }
+#wish-form .orn-shapes button { width: 40px; min-height: 0; height: 40px; padding: 0; border: 2px solid transparent; border-radius: 10px;
+  background: #0b1020; cursor: pointer; }
+#wish-form .orn-shapes button canvas { display: block; width: 36px; height: 36px; }
+#wish-form .orn-shapes button[aria-checked="true"], #wish-form .orn-colors button[aria-checked="true"] { border-color: var(--gold);
+  box-shadow: 0 0 0 2px #fff6e4, 0 0 0 4px #b8862b; }
+.orn-colors { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 10px; }
+#wish-form .orn-colors button { width: 28px; min-height: 0; height: 28px; padding: 0; border: 2px solid rgba(0, 0, 0, 0.15);
+  border-radius: 50%; cursor: pointer; }
+#wish-form .orn-shapes button:focus-visible, #wish-form .orn-colors button:focus-visible { outline: 2px solid #2b231f; outline-offset: 2px; }
 #wish-note { margin: 6px 0 0; min-height: 0; font-size: 13px; color: #9a4a2a; }
 #wish-note:empty { display: none; }
 #wish-msg { margin: 6px 0 0; font-size: 13px; color: #b03a2e; }
@@ -227,6 +239,9 @@ body > footer b { font-family: var(--mono); color: var(--ink); }
     <form id="wish-form">
       <h3 id="wish-title">방명록 남기기</h3>
       <input id="wish-name" maxlength="12" autocomplete="nickname" placeholder="이름 (비워두면 익명)" aria-label="이름">
+      <p class="orn-label">트리에 걸 장식 <span id="orn-picked"></span></p>
+      <div id="orn-shapes" class="orn-shapes" role="radiogroup" aria-label="장식 모양"></div>
+      <div id="orn-colors" class="orn-colors" role="radiogroup" aria-label="장식 색"></div>
       <textarea id="wish-text" maxlength="80" rows="3" placeholder="인사나 크리스마스 소원을 남겨주세요"></textarea>
       <p id="wish-note"></p>
       <p id="wish-msg" role="status"></p>
@@ -241,7 +256,7 @@ body > footer b { font-family: var(--mono); color: var(--ink); }
   <div class="wrap">
     <div class="board-head">
       <div><h2>방명록</h2>
-        <p class="lede">인사나 소원을 남기면 금빛 ✉ 쪽지로 트리에 걸리고, 가끔 별똥별이 되어 밤하늘을 가로질러요.</p></div>
+        <p class="lede">인사나 소원을 남기면 고른 장식이 되어 트리에 걸리고, 가끔 별똥별이 되어 밤하늘을 가로질러요.</p></div>
       <button id="board-write" type="button">방명록 남기기</button>
     </div>
     <p id="wish-status" aria-live="polite"></p>
@@ -759,7 +774,7 @@ const ORNAMENTS = (() => {
 })();
 
 function ornament_layer(taken, draw) {   // baubles: little shaded discs of letters
-  const list = ORNAMENTS.slice(0, Math.round(ORNAMENTS.length * Math.max(0.6, L.bulbs / N_BULBS)));
+  const list = orn_thin(ORNAMENTS.slice(0, Math.round(ORNAMENTS.length * Math.max(0.6, L.bulbs / N_BULBS))));
   for (const o of [...list, ...S.ornaments]) {
     const age = S.T - o.born, f = fade(o.a / TAU);
     if (age < 0 || f <= 0) continue;
@@ -1468,7 +1483,7 @@ function deco3d() {          // bulbs and ornaments hang just off the needles
     if (face > 0.1) GLOW.halo(PJ[0], PJ[1], fs * 2.6, mul(c, (0.25 + 0.8 * b) * f));
   }
   wish_layer_3d();
-  for (const o of [...ORNAMENTS, ...S.ornaments]) {
+  for (const o of [...orn_thin(ORNAMENTS), ...S.ornaments]) {
     const age = S.T - o.born, f = fade(o.a / TAU);
     if (age < 0 || f <= 0) continue;
     const [x, y, z] = tree_world(o.a, o.v, 0.035), nrm = [Math.sin(o.a), 0.2, Math.cos(o.a)];
@@ -1636,7 +1651,8 @@ const STORE = {
   _row(r, mine) {
     return { id: r.id, name: (r.name || "").slice(0, NAME_LEN), text: (r.text || "").slice(0, WISH_LEN),
       at: Date.parse(r.created_at) || 0, mine: r.id in mine, status: r.status || "approved",
-      ip: r.ip || "", flag: r.flag || "", blocked: !!r.blocked };
+      ip: r.ip || "", flag: r.flag || "", blocked: !!r.blocked,
+      ornament: r.ornament in ORN_SHAPES ? r.ornament : "ball", color: r.color in ORN_COLORS ? r.color : "red" };
   },
   async load() {                     // approved notes; the admin also gets the queue and IPs
     const mine = STORE._mine();
@@ -1645,13 +1661,13 @@ const STORE = {
       catch (e) { if (admin_expired(e)) ADMIN.logout(); else throw e; }
     }
     const rows = await STORE._call(
-      `wishes?select=id,name,text,created_at&order=created_at.desc&limit=${WISH_MAX}`);
+      `wishes?select=id,name,text,created_at,ornament,color&order=created_at.desc&limit=${WISH_MAX}`);
     return rows.map(r => STORE._row(r, mine));
   },
   async add(w) {                     // → "approved" (on the tree now) or "pending" (in review)
     const token = crypto.randomUUID();
     const status = await STORE._rpc("submit_wish",
-      { p_id: w.id, p_name: w.name, p_text: w.text, p_token: token });
+      { p_id: w.id, p_name: w.name, p_text: w.text, p_token: token, p_ornament: w.ornament, p_color: w.color });
     STORE._mine({ ...STORE._mine(), [w.id]: token });
     return status;
   },
@@ -1685,41 +1701,224 @@ function wish_hash(s) {
   return h >>> 0;
 }
 
+// Spots for ornaments, spread evenly over the cone: a golden-angle spiral with
+// more spots low down, where the tree is wider. Each note keeps its spot
+// (picked by its id, the next free one if taken) for as long as it is shown.
+const WISH_SLOTS = Array.from({ length: 40 }, (_, i) =>
+  [mod(i * 2.39996, TAU), 0.3 + 0.62 * Math.sqrt((i + 0.5) / 40)]);
+const WISH_SLOT = { key: "", of: {} };
+
 function wish_place(id) {            // every wish gets its own spot on the tree
+  const list = WISH.list.slice(0, WISH_MAX), key = list.map(w => w.id).join();
+  if (key !== WISH_SLOT.key) {       // the notes changed: hand out spots again, oldest first
+    const of = {}, used = new Set();
+    for (const w of [...list].sort((p, q) => p.at - q.at)) {
+      let s = wish_hash(w.id) % WISH_SLOTS.length;
+      while (used.has(s)) s = (s + 1) % WISH_SLOTS.length;
+      used.add(s);
+      of[w.id] = s;
+    }
+    WISH_SLOT.key = key;
+    WISH_SLOT.of = of;
+  }
+  const s = WISH_SLOT.of[id];
+  if (s !== undefined) return WISH_SLOTS[s];
   const h = wish_hash(id);
-  return [(h % 3600) / 3600 * TAU, 0.16 + 0.74 * ((h >>> 12) % 1000) / 1000];
+  return [(h % 3600) / 3600 * TAU, 0.3 + 0.62 * ((h >>> 12) % 1000) / 1000];
 }
 
 function wishes_on_tree() {
-  return WISH.list.slice(0, 120).filter(w => !WISH.flights.some(f => f.id === w.id));
+  return WISH.list.slice(0, WISH_MAX).filter(w => !WISH.flights.some(f => f.id === w.id));
 }
 
-function wish_layer(taken, draw) {   // golden letters (✉) hung among the needles
+// ------------------------------------------------------------------ wish ornaments
+// Every note hangs on the tree as the ornament its writer picked. A shape maps
+// a point in the ornament's box (x, y in -1..1, y pointing down) to what is
+// drawn there: { l: light 0..1, c: a fixed colour, ch: a fixed letter }, or
+// null for empty. Parts without a fixed colour (the bauble, the heart, the
+// sock, and every ribbon, string and bow) take the colour the writer chose.
+const ORN_COLORS = { red: ["빨강", rgb(235, 55, 70)], gold: ["금색", rgb(255, 190, 60)],
+  blue: ["파랑", rgb(80, 130, 255)], green: ["초록", rgb(60, 190, 110)],
+  purple: ["보라", rgb(175, 95, 235)], silver: ["은색", rgb(200, 210, 225)] };
+const ORN_NAMES = { ball: "방울", star: "별", heart: "하트", bell: "종", cane: "지팡이 사탕",
+  snow: "눈꽃", gift: "선물상자", ginger: "진저브레드맨", sock: "양말" };
+const OGOLD = rgb(255, 200, 80), OWHITE = rgb(245, 245, 250), OICE = rgb(195, 228, 255),
+  OCANE = rgb(230, 45, 55), OCOOKIE = rgb(190, 110, 50);
+const o_in = (x, y, cx, cy, rx, ry) => ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 <= 1;
+const o_lit = (x, y) => clamp01(0.62 - 0.3 * x - 0.32 * y);
+const o_sph = (ex, ey) => clamp01(0.2 + 0.8 * (Math.sqrt(Math.max(0, 1 - ex * ex - ey * ey)) * 0.75
+  - ex * 0.4 - ey * 0.45));
+function o_bow(x, y, cx, cy, w, h) {   // a little bow: knot and two loops
+  if (Math.hypot(x - cx, y - cy) < h * 0.75) return { l: 0.95, ch: "@" };
+  if (o_in(x, y, cx - w, cy, w * 0.85, h) || o_in(x, y, cx + w, cy, w * 0.85, h))
+    return { l: clamp01(o_lit(x, y) + 0.2), ch: "%" };
+  return null;
+}
+const ORN_SHAPES = {
+  ball(x, y) {
+    if (Math.abs(x) < 0.18 && y > -0.88 && y < -0.66) return { l: 0.75, c: OGOLD, ch: "#" };
+    if (Math.abs(x) < 0.07 && y >= -1.02 && y <= -0.88) return { l: 0.8, c: OGOLD, ch: "|" };
+    const ex = x / 0.8, ey = (y - 0.12) / 0.8;
+    if (ex * ex + ey * ey > 1) return null;
+    if ((ex + 0.38) ** 2 + (ey + 0.42) ** 2 < 0.05) return { l: 1, c: OWHITE, ch: "@" };
+    return { l: o_sph(ex, ey) };
+  },
+  star(x, y) {
+    const b = o_bow(x, y, 0, -0.8, 0.15, 0.09);
+    if (b) return b;
+    if (Math.abs(x) < 0.05 && y >= -1.02 && y < -0.6) return { l: 0.85, ch: "|" };
+    const X = x / 0.84, Y = (y - 0.16) / 0.84, arm = TAU / 5;
+    const a = ((Math.atan2(X, -Y) % arm) + arm) % arm / arm, t = Math.abs(a - 0.5) * 2;
+    const r = Math.hypot(X, Y);
+    if (r > (0.42 + 0.58 * t ** 2.4) * 0.98) return null;
+    if (r < 0.12) return { l: 1, c: OWHITE, ch: "*" };
+    return { l: clamp01(o_lit(X, Y) + (a < 0.5 ? 0.18 : -0.12)), c: OGOLD };
+  },
+  heart(x, y) {
+    const X = x * 1.25, Y = -y * 1.25 + 0.2;
+    if ((X * X + Y * Y - 1) ** 3 - X * X * Y ** 3 > 0) return null;
+    if (o_in(x, y, -0.4, -0.38, 0.13, 0.1)) return { l: 1, c: OWHITE, ch: "@" };
+    return { l: o_sph(x, y + 0.15) };
+  },
+  bell(x, y) {
+    const b = o_bow(x, y, 0, -0.86, 0.25, 0.13);
+    if (b) return b;
+    for (const s of [-1, 1]) {
+      const px = x * s;
+      if (px > 0.04 && px < 0.4 && Math.abs(y + 0.8 - px * 0.8) < 0.07) return { l: 0.75, ch: s > 0 ? "\\" : "/" };
+    }
+    if (Math.hypot(x, y - 0.78) < 0.14) return { l: 0.35, c: OGOLD, ch: "@" };
+    if (y > 0.5 && y < 0.66 && Math.abs(x) < 0.86) return { l: o_lit(x, y) * 0.9, c: OGOLD, ch: "=" };
+    if (y < -0.74 || y > 0.5) return null;
+    const t = (y + 0.74) / 1.24, w = 0.27 + 0.32 * t + 0.26 * t ** 3;
+    if (Math.abs(x) > w) return null;
+    return { l: o_sph(x / w * 0.85, (t - 0.45) * 0.7), c: OGOLD };
+  },
+  cane(x, y) {
+    const b = o_bow(x, y, 0.21, -0.36, 0.16, 0.1);
+    if (b) return b;
+    for (const s of [-1, 1])
+      if (y > -0.3 && y < 0.02 && Math.abs(x - 0.21 - s * (y + 0.3) * 0.45) < 0.05) return { l: 0.75, ch: s > 0 ? "\\" : "/" };
+    const stick = x > 0.06 && x < 0.36 && y > -0.4 && y < 0.96;
+    const hook = y <= -0.4 && Math.abs(Math.hypot(x + 0.1, y + 0.4) - 0.31) < 0.15;
+    const tip = x > -0.56 && x < -0.26 && y > -0.4 && y < -0.12;
+    if (!stick && !hook && !tip) return null;
+    const red = Math.floor((x + y) * 3.6 + 10) % 2 === 0;
+    return { l: o_lit(x, y), c: red ? OCANE : OWHITE, ch: red ? "#" : "=" };
+  },
+  snow(x, y) {
+    const b = o_bow(x, y, 0, -0.84, 0.13, 0.08);
+    if (b) return b;
+    if (Math.abs(x) < 0.045 && y >= -1.02 && y < -0.62) return { l: 0.85, ch: "|" };
+    const X = x / 0.84, Y = (y - 0.14) / 0.84;
+    if (Math.hypot(X, Y) < 0.1) return { l: 1, c: OWHITE, ch: "*" };
+    for (let k = 0; k < 6; k++) {
+      const th = k * Math.PI / 3, dx = Math.sin(th), dy = -Math.cos(th);
+      const p = X * dx + Y * dy, q = Math.abs(X * dy - Y * dx);
+      if (p > 0 && p < 0.95 && q < 0.075) return { l: 0.95, c: OICE, ch: "|/\\|/\\"[k] };
+      const bx = X - 0.55 * dx, by = Y - 0.55 * dy;
+      for (const s of [-1, 1]) {
+        const ph = th + s * 0.85, ex = Math.sin(ph), ey = -Math.cos(ph);
+        const pp = bx * ex + by * ey, qq = Math.abs(bx * ey - by * ex);
+        if (pp > 0 && pp < 0.3 && qq < 0.06) return { l: 0.85, c: OICE, ch: "+" };
+      }
+    }
+    return null;
+  },
+  gift(x, y) {
+    const box = Math.abs(x) < 0.72 && y > -0.3 && y < 0.86, lid = Math.abs(x) < 0.84 && y > -0.5 && y <= -0.3;
+    const bow = o_in(x, y, -0.26, -0.68, 0.24, 0.17) || o_in(x, y, 0.26, -0.68, 0.24, 0.17);
+    if (!box && !lid && !bow) return null;
+    if (bow || Math.abs(x) < 0.11) return { l: clamp01(o_lit(x, y) + 0.15), c: OGOLD, ch: bow ? "%" : "#" };
+    return { l: lid ? clamp01(o_lit(x, y) + 0.15) : o_lit(x, y) };
+  },
+  ginger(x, y) {
+    const b = o_bow(x, y, 0, -0.31, 0.14, 0.08);
+    if (b) return b;
+    const body = Math.hypot(x, y + 0.6) < 0.3 || o_in(x, y, 0, 0.12, 0.36, 0.42) || o_in(x, y, 0, -0.14, 0.82, 0.15)
+      || o_in(x, y, -0.24, 0.62, 0.17, 0.34) || o_in(x, y, 0.24, 0.62, 0.17, 0.34);
+    if (!body) return null;
+    if (Math.hypot(x + 0.11, y + 0.66) < 0.06 || Math.hypot(x - 0.11, y + 0.66) < 0.06
+      || Math.hypot(x, y - 0.02) < 0.07 || Math.hypot(x, y - 0.26) < 0.07) return { l: 1, c: OWHITE, ch: "o" };
+    if ((Math.abs(x) > 0.6 && Math.abs(y + 0.14) < 0.12) || y > 0.82) return { l: 1, c: OWHITE, ch: "~" };
+    return { l: o_lit(x, y), c: OCOOKIE };
+  },
+  sock(x, y) {
+    if (x > -0.5 && x < 0.32 && y > -0.92 && y < -0.6) return { l: clamp01(o_lit(x, y) + 0.2), c: OWHITE, ch: "#" };
+    const leg = x > -0.4 && x < 0.22 && y >= -0.6 && y < 0.4, foot = o_in(x, y, 0.08, 0.5, 0.56, 0.3) && x > -0.4;
+    if (!leg && !foot) return null;
+    if (y > -0.22 && y < -0.08) return { l: 0.9, c: OWHITE, ch: "=" };
+    return { l: o_lit(x, y) };
+  },
+};
+const orn_color = w => (ORN_COLORS[w.color] || ORN_COLORS.red)[1];
+
+function orn_cell(key, x, y, col) {  // the letter and colour at (x, y) of an ornament, or null
+  const s = (ORN_SHAPES[key] || ORN_SHAPES.ball)(x, y);
+  if (!s) return null;
+  return { ch: s.ch || RAMP[Math.round(clamp01(0.3 + 0.7 * s.l) * (RAMP.length - 1))],
+    c: mul(s.c || col, 0.45 + 0.85 * s.l) };
+}
+
+function orn_thin(list) {            // fewer plain baubles as notes fill the tree
+  const keep = Math.max(24, list.length - Math.round(wishes_on_tree().length * 1.5));
+  if (keep >= list.length) return list;
+  return list.filter((o, i) => Math.floor((i + 1) * keep / list.length) > Math.floor(i * keep / list.length));
+}
+
+function wish_layer(taken, draw) {   // each note: its ornament, hung among the needles
   if (S.T < TL.ornaments) return;
   const f = fade(0.7);
+  if (f <= 0) return;
   for (const w of wishes_on_tree()) {
     const [a, v] = wish_place(w.id), [x, y, z, R] = surface(a, v, 3);
-    if (z < 0.05 * R || f <= 0) continue;
-    const [k, r] = tcell_of(x, y), lam = clamp01(0.4 + 0.6 * z / R);
-    const size = 1.9 * pop((S.clock - (WISH.landed[w.id] ?? -9)) / 0.35);
-    const c = mul(WISH_TAG, (0.65 + 0.55 * lam) * 1.1);
-    taken.add(k * 4096 + r);
-    draw.push([tcell_x(k), tcell_y(r), "✉", c, size, f, mul(WISH_TAG, 0.4 * f)]);
-    WISH.spots.push([tcell_x(k), tcell_y(r), L.tfs * size, w]);
+    if (z < 0.05 * R) continue;
+    const [k0, r0] = tcell_of(x, y), lam = 0.55 + 0.5 * z / R;
+    const rad = L.R * 0.17 / L.tch * pop((S.clock - (WISH.landed[w.id] ?? -9)) / 0.35)
+      * (0.65 + 0.35 * z / R);                       // half the ornament's height, in rows
+    if (rad < 0.8) continue;
+    const col = orn_color(w), n = Math.ceil(rad / 0.6), m = Math.ceil(rad);
+    for (let dr = -m - 1; dr <= m + 1; dr++)
+      for (let dk = -n - 2; dk <= n + 2; dk++) {
+        const nx = dk * 0.6 / rad, ny = dr / rad, o = orn_cell(w.ornament, nx, ny, col);
+        if (o) {
+          taken.add((k0 + dk) * 4096 + r0 + dr);
+          draw.push([tcell_x(k0 + dk), tcell_y(r0 + dr), o.ch, mul(o.c, lam), 1.05, f, null]);
+        } else if (orn_cell(w.ornament, nx * 0.85, ny * 0.85, col)) {
+          taken.add((k0 + dk) * 4096 + r0 + dr);   // a dark rim keeps the needles off the shape
+        }
+      }
+    const tw = 0.5 + 0.5 * Math.sin(S.clock * 2.4 + (wish_hash(w.id) % 628) / 100);
+    draw.push([tcell_x(k0 + n + 1), tcell_y(r0 - Math.round(m * 0.8)), "✦", mul(WISH_TAG, 0.4 + 0.9 * tw),
+      1.2, f, mul(WISH_TAG, 0.35 * tw * f)]);
+    GLOW.halo(tcell_x(k0), tcell_y(r0), rad * L.tch * 2.6, mul(col, 0.3 * f));
+    WISH.spots.push([tcell_x(k0), tcell_y(r0), rad * L.tch / 0.7, w]);
   }
 }
 
 function wish_layer_3d() {
   if (S.T < TL.ornaments) return;
   const fsK = W3.TH / W3.rings, f = fade(0.7);
+  if (f <= 0) return;
   for (const w of wishes_on_tree()) {
-    const [a, v] = wish_place(w.id), [x, y, z] = tree_world(a, v, 0.04);
-    if (facing({ x, y, z, n: [Math.sin(a), 0.2, Math.cos(a)] }) < 0 || !project(x, y, z)) continue;
-    const size = fsK * PJ[3] * 2.4 * pop((S.clock - (WISH.landed[w.id] ?? -9)) / 0.35);
-    const c = mul(WISH_TAG, 1.1);
-    q_push(PJ[2] - 0.03, PJ[0], PJ[1], size, CI["✉"], fog(c, PJ[2]), f);
-    GLOW.halo(PJ[0], PJ[1], size * 1.8, mul(WISH_TAG, 0.4 * f));
-    WISH.spots.push([PJ[0], PJ[1], size, w]);
+    const [a, v] = wish_place(w.id), [x, y, z] = tree_world(a, v, 0.05), nrm = [Math.sin(a), 0.2, Math.cos(a)];
+    if (facing({ x, y, z, n: nrm }) < 0 || !project(x, y, z)) continue;
+    const [cx, cy, zc] = PJ, letter = fsK * PJ[3], lam = clamp01(0.55 + 0.45 * dot(unit(...nrm), LIGHT));
+    const rad = letter * 7 * pop((S.clock - (WISH.landed[w.id] ?? -9)) / 0.35);
+    if (rad < letter) continue;
+    const col = orn_color(w), DARK = [0.006, 0.014, 0.012], pad = rad * 1.2;
+    for (let dy = -pad + letter / 2; dy < pad; dy += letter)
+      for (let dx = -pad + letter * 0.3; dx < pad; dx += letter * 0.6) {
+        const o = orn_cell(w.ornament, dx / rad, dy / rad, col);
+        if (o || orn_cell(w.ornament, dx / rad * 0.85, dy / rad * 0.85, col))   // dark backing and rim
+          q_push(zc - 0.025, cx + dx, cy + dy, letter * 1.1, SOLID, DARK, 0.92 * f);
+        if (o) q_push(zc - 0.03, cx + dx, cy + dy, letter, CI[o.ch], fog(mul(o.c, 0.6 + 0.5 * lam), zc), f);
+      }
+    const tw = 0.5 + 0.5 * Math.sin(S.clock * 2.4 + (wish_hash(w.id) % 628) / 100);
+    q_push(zc - 0.04, cx + rad * 1.05, cy - rad * 0.85, letter * 1.6, CI["✦"],
+      fog(mul(WISH_TAG, 0.4 + 0.9 * tw), zc), f);
+    GLOW.halo(cx, cy, rad * 2.6, mul(col, 0.3 * f));
+    WISH.spots.push([cx, cy, rad / 0.7, w]);
   }
 }
 
@@ -1902,12 +2101,13 @@ const POST_ERRORS = {
   busy: "지금 글이 몰리고 있어요. 1분 뒤에 다시 남겨주세요.",
 };
 
-function post_wish(text, name = "") {   // hang a new note on the tree → Promise<{ ok, msg }>
+function post_wish(text, name = "", ornament = "ball", color = "red") {   // → Promise<{ ok, msg }>
   text = text.trim().replace(/\s+/g, " ").slice(0, WISH_LEN);
   name = name.trim().replace(/\s+/g, " ").slice(0, NAME_LEN);
   if (!text) return Promise.resolve({ ok: false, msg: "남길 말을 적어주세요." });
   const w = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), name, text,
-    at: Date.now() };
+    at: Date.now(), ornament: ornament in ORN_SHAPES ? ornament : "ball",
+    color: color in ORN_COLORS ? color : "red" };
   return STORE.add(w).then(status => {
     trace("post_wish");
     if (status === "pending")
@@ -2042,7 +2242,7 @@ function wish_card(w, admin) {       // one sticky note on the board
   card.className = `wish c${wish_hash(w.id) % 5}` + (w.status === "pending" ? " pending" : "");
   p.textContent = w.text;
   who.textContent = name_of(w);
-  t.textContent = when(w.at);
+  t.textContent = `${when(w.at)} · ${(ORN_COLORS[w.color] || ORN_COLORS.red)[0]} ${ORN_NAMES[w.ornament] || "방울"}`;
   foot.append(who, t);
   card.append(p, foot);
   if (!admin) {
@@ -2176,7 +2376,7 @@ function wish_ui() {
     try { localStorage.setItem(NAME_KEY, name.value.trim()); } catch (e) {}
     send.disabled = true;
     say("");
-    const r = await post_wish(text.value, name.value);
+    const r = await post_wish(text.value, name.value, pick.ornament, pick.color);
     send.disabled = false;
     if (!r.ok) return say(r.msg);
     text.value = "";
@@ -2184,6 +2384,60 @@ function wish_ui() {
     if (r.msg) say(r.msg, true);
     else close();
   };
+  const pick = ornament_picker();
+}
+
+function orn_preview(canvas, key, col) {   // a small pixel drawing of an ornament for the picker
+  const d = window.devicePixelRatio || 1, size = 36, cw = 2, ch = 2, half = size / 2 - 2;
+  canvas.width = size * d;
+  canvas.height = size * d;
+  const g = canvas.getContext("2d");
+  g.setTransform(d, 0, 0, d, 0, 0);
+  for (let py = -half; py < half; py += ch)
+    for (let px = -half; px < half; px += cw) {
+      const o = orn_cell(key, (px + cw / 2) / half, (py + ch / 2) / half, col);
+      if (!o) continue;
+      g.fillStyle = `rgb(${o.c.map(v => Math.round(clamp01(v) * 255)).join(",")})`;
+      g.fillRect(size / 2 + px, size / 2 + py, cw, ch);
+    }
+}
+
+function ornament_picker() {         // shape and colour buttons in the write form; remembers the last pick
+  const ORN_KEY = "xmas100bee.ornament";
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem(ORN_KEY) || "{}"); } catch (e) {}
+  const pick = { ornament: saved.ornament in ORN_SHAPES ? saved.ornament : "ball",
+    color: saved.color in ORN_COLORS ? saved.color : "red" };
+  const shapes = document.getElementById("orn-shapes"), colors = document.getElementById("orn-colors");
+  const label = document.getElementById("orn-picked");
+  const sync = () => {
+    for (const b of shapes.children) {
+      b.setAttribute("aria-checked", String(b.dataset.key === pick.ornament));
+      orn_preview(b.firstChild, b.dataset.key, ORN_COLORS[pick.color][1]);
+    }
+    for (const b of colors.children) b.setAttribute("aria-checked", String(b.dataset.key === pick.color));
+    label.textContent = `· ${ORN_COLORS[pick.color][0]} ${ORN_NAMES[pick.ornament]}`;
+    try { localStorage.setItem(ORN_KEY, JSON.stringify(pick)); } catch (e) {}
+  };
+  const button = (box, key, title, kind) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.dataset.key = key;
+    b.title = title;
+    b.setAttribute("role", "radio");
+    b.setAttribute("aria-label", title);
+    b.onclick = () => { pick[kind] = key; sync(); };
+    box.append(b);
+    return b;
+  };
+  for (const key in ORN_SHAPES) button(shapes, key, ORN_NAMES[key], "ornament").append(document.createElement("canvas"));
+  for (const key in ORN_COLORS) {
+    const c = ORN_COLORS[key][1];
+    button(colors, key, ORN_COLORS[key][0], "color").style.background =
+      `rgb(${c.map(v => Math.round(v * 255)).join(",")})`;
+  }
+  sync();
+  return pick;
 }
 
 // ------------------------------------------------------------------ frame
