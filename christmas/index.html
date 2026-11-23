@@ -99,6 +99,18 @@ body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 var(-
   border-radius: 14px; background: rgba(255, 200, 120, 0.06); }
 #wish-queue[hidden] { display: none; }
 #wish-queue h3 { margin: 0 0 14px; font-size: 16px; color: #ffd98a; }
+.blocked-box { margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(255, 200, 120, 0.25); }
+.blocked-box summary { cursor: pointer; font-weight: 600; color: #ffd98a; }
+.blocked-row { margin-top: 12px; padding: 12px 14px; border-radius: 10px; background: rgba(255, 255, 255, 0.05); }
+.blocked-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.blocked-head b { font-family: var(--mono); color: #fff; overflow-wrap: anywhere; }
+.blocked-head span { font-size: 13px; color: var(--muted); }
+.blocked-head button { margin-left: auto; min-height: 34px; padding: 0 14px; border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px; background: transparent; color: inherit; font: 600 13px var(--sans); cursor: pointer; }
+.blocked-row ul { margin: 10px 0 0; padding-left: 18px; }
+.blocked-row li { margin: 6px 0; font-size: 14px; color: #f3e9dc; overflow-wrap: anywhere; }
+.blocked-row li small { display: block; margin-top: 2px; font-size: 12px; color: var(--muted); }
+.blocked-none { margin: 8px 0 0; font-size: 13px; color: var(--muted); }
 .wish.pending { outline: 2px dashed #c0392b; outline-offset: -6px; }
 .wish-meta { margin: 10px 0 0; font: 12px var(--mono); color: #7a5a4a; overflow-wrap: anywhere; }
 .wish-acts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
@@ -1655,6 +1667,7 @@ const STORE = {
     remove: id => STORE._rpc("admin_delete", { p_id: id }, true),
     block: ip => STORE._rpc("admin_block_ip", { p_ip: ip }, true),
     unblock: ip => STORE._rpc("admin_unblock_ip", { p_ip: ip }, true),
+    blocked: () => STORE._rpc("admin_blocked_ips", {}, true),   // [{ ip, created_at, posts }]
   },
   _mine(set) {                       // { wish id: owner token } for notes written here
     try {
@@ -1663,7 +1676,7 @@ const STORE = {
     } catch (e) { return {}; }
   },
 };
-const WISH = { list: [], queue: [], flights: [], spots: [], landed: {}, meteors: [], offline: false,
+const WISH = { list: [], queue: [], blocked: null, blockedOpen: false, flights: [], spots: [], landed: {}, meteors: [], offline: false,
   nextFall: 2.5 };
 
 function wish_hash(s) {
@@ -1865,6 +1878,10 @@ async function wishes_refresh(fly) {  // fetch the shared notes; fly in ones we 
     WISH.list = all.filter(w => w.status === "approved").map(w => ({ ...w, by: "guest" })).sort(newest);
     WISH.queue = all.filter(w => w.status === "pending").sort(newest);
     WISH.offline = false;
+    WISH.blocked = null;
+    if (ADMIN.token) {
+      try { WISH.blocked = await STORE.admin.blocked(); } catch (e) { /* list shows a notice */ }
+    }
     if (fly) for (const w of WISH.list)
       if (!seen.has(w.id)) WISH.flights.push({ id: w.id, t0: S.clock, sx: L.w * (0.15 + 0.7 * Math.random()) });
   } catch (e) {
@@ -2052,6 +2069,51 @@ function wish_card(w, admin) {       // one sticky note on the board
   return card;
 }
 
+function blocked_box() {             // admin: blocked IPs, what they wrote, and an unblock button
+  const box = document.createElement("details"), sum = document.createElement("summary");
+  const list = WISH.blocked;
+  box.className = "blocked-box";
+  box.open = WISH.blockedOpen;
+  box.ontoggle = () => { WISH.blockedOpen = box.open; };
+  sum.textContent = list ? `차단한 IP ${list.length}개` : "차단한 IP 목록을 불러오지 못했어요.";
+  box.append(sum);
+  const note = text => {
+    const p = document.createElement("p");
+    p.className = "blocked-none";
+    p.textContent = text;
+    return p;
+  };
+  if (list && !list.length) box.append(note("차단한 IP가 없어요."));
+  for (const b of list || []) {
+    const row = document.createElement("div"), head = document.createElement("div");
+    const ip = document.createElement("b"), at = document.createElement("span");
+    row.className = "blocked-row";
+    head.className = "blocked-head";
+    ip.textContent = b.ip;
+    at.textContent = `${when(Date.parse(b.created_at) || 0)} 차단`;
+    head.append(ip, at, wish_button("차단 해제", "", `${b.ip} 차단 풀기`,
+      () => admin_act(() => STORE.admin.unblock(b.ip), `${b.ip} 차단을 풀까요?\n\n이 IP에서 다시 글을 쓸 수 있게 돼요.`)));
+    row.append(head);
+    const posts = Array.isArray(b.posts) ? b.posts : [];
+    if (!posts.length) row.append(note("차단할 때 남아 있던 글이 없어요."));
+    else {
+      const ul = document.createElement("ul");
+      for (const w of posts) {
+        const li = document.createElement("li"), small = document.createElement("small");
+        li.textContent = `“${w.text || ""}”`;
+        small.textContent = [w.name || "익명", w.flag ? `걸린 이유: ${w.flag}` : "",
+          w.status === "approved" ? "트리에 걸려 있던 글" : "검토 대기였던 글",
+          when(Date.parse(w.at) || 0)].filter(Boolean).join(" · ");
+        li.append(small);
+        ul.append(li);
+      }
+      row.append(ul);
+    }
+    box.append(row);
+  }
+  return box;
+}
+
 function render_board() {
   admin_sync();
   const list = document.getElementById("wish-list"), status = document.getElementById("wish-status");
@@ -2070,7 +2132,7 @@ function render_board() {
       : "검토 대기 중인 글이 없어요.";
     grid.className = "wish-grid";
     for (const w of WISH.queue) grid.append(wish_card(w, true));
-    queue.append(head, grid);
+    queue.append(head, grid, blocked_box());
   }
   list.textContent = "";
   if (!n) {
