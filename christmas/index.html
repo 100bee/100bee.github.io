@@ -154,6 +154,17 @@ body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 var(-
 #wish-form .orn-colors button { width: 28px; min-height: 0; height: 28px; padding: 0; border: 2px solid rgba(0, 0, 0, 0.15);
   border-radius: 50%; cursor: pointer; }
 #wish-form .orn-shapes button:focus-visible, #wish-form .orn-colors button:focus-visible { outline: 2px solid #2b231f; outline-offset: 2px; }
+#place-bar { position: absolute; z-index: 5; top: max(70px, env(safe-area-inset-top)); left: 50%;
+  transform: translateX(-50%); display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+  gap: 8px; width: max-content; max-width: calc(100vw - 24px); padding: 10px 12px 10px 18px;
+  border: 1px solid rgba(255, 215, 120, 0.6); border-radius: 22px; background: rgba(8, 12, 28, 0.88);
+  color: #fff6e4; font: 600 14px var(--sans); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5); }
+#place-bar[hidden] { display: none; }
+#place-bar button { min-height: 36px; padding: 0 14px; border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px; background: transparent; color: inherit; font: 600 13px var(--sans); cursor: pointer; }
+#place-bar #place-auto { border-color: var(--gold); color: var(--gold); }
+#place-bar.toast { padding: 10px 18px; }
+#place-bar.toast button { display: none; }
 .wish-privacy { margin: 6px 0 0; font-size: 12px; line-height: 1.4; color: #8a7c70; }
 #wish-note { margin: 6px 0 0; min-height: 0; font-size: 13px; color: #9a4a2a; }
 #wish-note:empty { display: none; }
@@ -236,6 +247,11 @@ body > footer b { font-family: var(--mono); color: var(--ink); }
   <div id="stats"></div>
   <a class="cue" href="#board">방명록 ↓</a>
   <div id="note" hidden><p></p><small>from @100bee</small></div>
+  <div id="place-bar" hidden role="status" aria-live="polite">
+    <span id="place-msg"></span>
+    <button type="button" id="place-auto">아무 데나 걸기</button>
+    <button type="button" id="place-cancel">취소</button>
+  </div>
   <div id="wish-sheet" hidden role="dialog" aria-modal="true" aria-labelledby="wish-title">
     <form id="wish-form">
       <h3 id="wish-title">방명록 남기기</h3>
@@ -1084,18 +1100,20 @@ function shooting_layer() {
   }
 }
 
-function hang_ornament(x, y) {    // tap the tree: hang something there
-  let a, v;
+function tree_spot(x, y) {          // the spot on the tree under a screen point: [angle, height] or null
   if (S.mode3d) {
     const p = pick_tree(x, y);
-    if (!p) return;
-    [a, v] = [p.a, p.v];
-  } else {
-    v = (y - L.top) / L.Ht;
-    const Rp = tier_at(v)[0] * L.R, X = x - L.cx;
-    if (Math.abs(X) >= Rp) return;
-    a = mod(Math.atan2(X, Math.sqrt(Rp * Rp - X * X)) - S.spin, TAU);
+    return p ? [p.a, p.v] : null;
   }
+  const v = (y - L.top) / L.Ht, [rn, tid] = tier_at(v), Rp = rn * L.R, X = x - L.cx;
+  if (tid < 0 || Math.abs(X) >= Rp) return null;
+  return [mod(Math.atan2(X, Math.sqrt(Rp * Rp - X * X)) - S.spin, TAU), v];
+}
+
+function hang_ornament(x, y) {    // tap the tree: hang something there
+  const spot = tree_spot(x, y);
+  if (!spot) return;
+  const [a, v] = spot;
   S.ornaments.push({ a, v, kind: Math.floor(Math.random() * ORN_KINDS.length), born: S.T });
   if (S.ornaments.length > 40) S.ornaments.shift();
   trace("hang_ornament");
@@ -1654,7 +1672,8 @@ const STORE = {
     return { id: r.id, name: (r.name || "").slice(0, NAME_LEN), text: (r.text || "").slice(0, WISH_LEN),
       at: Date.parse(r.created_at) || 0, mine: r.id in mine, status: r.status || "approved",
       ip: r.ip || "", flag: r.flag || "", blocked: !!r.blocked,
-      ornament: r.ornament in ORN_SHAPES ? r.ornament : "ball", color: r.color in ORN_COLORS ? r.color : "red" };
+      ornament: r.ornament in ORN_SHAPES ? r.ornament : "ball", color: r.color in ORN_COLORS ? r.color : "red",
+      pos: Number.isFinite(r.pos_a) && Number.isFinite(r.pos_v) ? [r.pos_a, r.pos_v] : null };
   },
   async load() {                     // approved notes; the admin also gets the queue and IPs
     const mine = STORE._mine();
@@ -1663,13 +1682,14 @@ const STORE = {
       catch (e) { if (admin_expired(e)) ADMIN.logout(); else throw e; }
     }
     const rows = await STORE._call(
-      `wishes?select=id,name,text,created_at,ornament,color&order=created_at.desc&limit=${WISH_MAX}`);
+      `wishes?select=id,name,text,created_at,ornament,color,pos_a,pos_v&order=created_at.desc&limit=${WISH_MAX}`);
     return rows.map(r => STORE._row(r, mine));
   },
   async add(w) {                     // → "approved" (on the tree now) or "pending" (in review)
     const token = crypto.randomUUID();
     const status = await STORE._rpc("submit_wish",
-      { p_id: w.id, p_name: w.name, p_text: w.text, p_token: token, p_ornament: w.ornament, p_color: w.color });
+      { p_id: w.id, p_name: w.name, p_text: w.text, p_token: token, p_ornament: w.ornament, p_color: w.color,
+        p_a: w.pos ? w.pos[0] : null, p_v: w.pos ? w.pos[1] : null });
     STORE._mine({ ...STORE._mine(), [w.id]: token });
     return status;
   },
@@ -1710,23 +1730,53 @@ const WISH_SLOTS = Array.from({ length: 40 }, (_, i) =>
   [mod(i * 2.39996, TAU), 0.3 + 0.62 * Math.sqrt((i + 0.5) / 40)]);
 const WISH_SLOT = { key: "", of: {} };
 
+function spot_gap(a1, v1, a2, v2) {  // roughly how far apart two spots are, in tree radii
+  const da = Math.abs(mod(a1 - a2 + Math.PI, TAU) - Math.PI);
+  return Math.hypot(da * (v1 + v2) / 2, (v1 - v2) * L.Ht / L.R);
+}
+const SPOT_GAP = 0.3;                // about an ornament's width
+
 function wish_place(id) {            // every wish gets its own spot on the tree
   const list = WISH.list.slice(0, WISH_MAX), key = list.map(w => w.id).join();
   if (key !== WISH_SLOT.key) {       // the notes changed: hand out spots again, oldest first
     const of = {}, used = new Set();
+    for (const w of list) if (w.pos) {         // spots the writers picked themselves
+      of[w.id] = w.pos;
+      WISH_SLOTS.forEach(([a, v], s) => { if (spot_gap(a, v, w.pos[0], w.pos[1]) < SPOT_GAP) used.add(s); });
+    }
     for (const w of [...list].sort((p, q) => p.at - q.at)) {
+      if (w.pos) continue;
       let s = wish_hash(w.id) % WISH_SLOTS.length;
-      while (used.has(s)) s = (s + 1) % WISH_SLOTS.length;
+      for (let n = 0; used.has(s) && n < WISH_SLOTS.length; n++) s = (s + 1) % WISH_SLOTS.length;
       used.add(s);
-      of[w.id] = s;
+      of[w.id] = WISH_SLOTS[s];
     }
     WISH_SLOT.key = key;
     WISH_SLOT.of = of;
   }
-  const s = WISH_SLOT.of[id];
-  if (s !== undefined) return WISH_SLOTS[s];
+  if (WISH_SLOT.of[id]) return WISH_SLOT.of[id];
   const h = wish_hash(id);
   return [(h % 3600) / 3600 * TAU, 0.3 + 0.62 * ((h >>> 12) % 1000) / 1000];
+}
+
+function free_spot(a, v) {           // the picked spot, nudged aside if another ornament is right there
+  const clampV = x => Math.min(0.95, Math.max(0.2, x));
+  const taken = wishes_on_tree().map(w => wish_place(w.id));
+  const clear = (a1, v1) => taken.every(([a2, v2]) => spot_gap(a1, v1, a2, v2) >= SPOT_GAP);
+  v = clampV(v);
+  if (clear(a, v)) return [mod(a, TAU), v];
+  for (let r = 0.1; r <= 0.61; r += 0.1)
+    for (let k = 0; k < 12; k++) {
+      const th = k * TAU / 12, a1 = a + r * Math.cos(th) / Math.max(v, 0.3), v1 = clampV(v + r * Math.sin(th) * L.R / L.Ht);
+      if (clear(a1, v1)) return [mod(a1, TAU), v1];
+    }
+  return [mod(a, TAU), v];
+}
+
+function wish_items() {              // what the layers hang: [note, angle, height, opacity]
+  const items = wishes_on_tree().map(w => [w, ...wish_place(w.id), 1]);
+  if (PLACE.w && PLACE.ghost) items.push([PLACE.w, ...PLACE.ghost, 0.55 + 0.25 * Math.sin(S.clock * 6)]);
+  return items;
 }
 
 function wishes_on_tree() {
@@ -1872,8 +1922,8 @@ function wish_layer(taken, draw) {   // each note: its ornament, hung among the 
   if (S.T < TL.ornaments) return;
   const f = fade(0.7);
   if (f <= 0) return;
-  for (const w of wishes_on_tree()) {
-    const [a, v] = wish_place(w.id), [x, y, z, R] = surface(a, v, 3);
+  for (const [w, a, v, alpha] of wish_items()) {
+    const [x, y, z, R] = surface(a, v, 3), fw = f * alpha;
     if (z < 0.05 * R) continue;
     const [k0, r0] = tcell_of(x, y), lam = 0.55 + 0.5 * z / R;
     const rad = L.R * 0.17 / L.tch * pop((S.clock - (WISH.landed[w.id] ?? -9)) / 0.35)
@@ -1885,16 +1935,16 @@ function wish_layer(taken, draw) {   // each note: its ornament, hung among the 
         const nx = dk * 0.6 / rad, ny = dr / rad, o = orn_cell(w.ornament, nx, ny, col);
         if (o) {
           taken.add((k0 + dk) * 4096 + r0 + dr);
-          draw.push([tcell_x(k0 + dk), tcell_y(r0 + dr), o.ch, mul(o.c, lam), 1.05, f, null]);
+          draw.push([tcell_x(k0 + dk), tcell_y(r0 + dr), o.ch, mul(o.c, lam), 1.05, fw, null]);
         } else if (orn_cell(w.ornament, nx * 0.85, ny * 0.85, col)) {
           taken.add((k0 + dk) * 4096 + r0 + dr);   // a dark rim keeps the needles off the shape
         }
       }
     const tw = 0.5 + 0.5 * Math.sin(S.clock * 2.4 + (wish_hash(w.id) % 628) / 100);
     draw.push([tcell_x(k0 + n + 1), tcell_y(r0 - Math.round(m * 0.8)), "✦", mul(WISH_TAG, 0.4 + 0.9 * tw),
-      1.2, f, mul(WISH_TAG, 0.35 * tw * f)]);
-    GLOW.halo(tcell_x(k0), tcell_y(r0), rad * L.tch * 2.6, mul(col, 0.3 * f));
-    WISH.spots.push([tcell_x(k0), tcell_y(r0), rad * L.tch / 0.7, w]);
+      1.2, fw, mul(WISH_TAG, 0.35 * tw * fw)]);
+    GLOW.halo(tcell_x(k0), tcell_y(r0), rad * L.tch * 2.6, mul(col, 0.3 * fw));
+    if (!w.ghost) WISH.spots.push([tcell_x(k0), tcell_y(r0), rad * L.tch / 0.7, w]);
   }
 }
 
@@ -1902,8 +1952,8 @@ function wish_layer_3d() {
   if (S.T < TL.ornaments) return;
   const fsK = W3.TH / W3.rings, f = fade(0.7);
   if (f <= 0) return;
-  for (const w of wishes_on_tree()) {
-    const [a, v] = wish_place(w.id), [x, y, z] = tree_world(a, v, 0.05), nrm = [Math.sin(a), 0.2, Math.cos(a)];
+  for (const [w, a, v, alpha] of wish_items()) {
+    const [x, y, z] = tree_world(a, v, 0.05), nrm = [Math.sin(a), 0.2, Math.cos(a)], fw = f * alpha;
     if (facing({ x, y, z, n: nrm }) < 0 || !project(x, y, z)) continue;
     const [cx, cy, zc] = PJ, letter = fsK * PJ[3], lam = clamp01(0.55 + 0.45 * dot(unit(...nrm), LIGHT));
     const rad = letter * 7 * pop((S.clock - (WISH.landed[w.id] ?? -9)) / 0.35);
@@ -1913,14 +1963,14 @@ function wish_layer_3d() {
       for (let dx = -pad + letter * 0.3; dx < pad; dx += letter * 0.6) {
         const o = orn_cell(w.ornament, dx / rad, dy / rad, col);
         if (o || orn_cell(w.ornament, dx / rad * 0.85, dy / rad * 0.85, col))   // dark backing and rim
-          q_push(zc - 0.025, cx + dx, cy + dy, letter * 1.1, SOLID, DARK, 0.92 * f);
-        if (o) q_push(zc - 0.03, cx + dx, cy + dy, letter, CI[o.ch], fog(mul(o.c, 0.6 + 0.5 * lam), zc), f);
+          q_push(zc - 0.025, cx + dx, cy + dy, letter * 1.1, SOLID, DARK, 0.92 * fw);
+        if (o) q_push(zc - 0.03, cx + dx, cy + dy, letter, CI[o.ch], fog(mul(o.c, 0.6 + 0.5 * lam), zc), fw);
       }
     const tw = 0.5 + 0.5 * Math.sin(S.clock * 2.4 + (wish_hash(w.id) % 628) / 100);
     q_push(zc - 0.04, cx + rad * 1.05, cy - rad * 0.85, letter * 1.6, CI["✦"],
-      fog(mul(WISH_TAG, 0.4 + 0.9 * tw), zc), f);
-    GLOW.halo(cx, cy, rad * 2.6, mul(col, 0.3 * f));
-    WISH.spots.push([cx, cy, rad / 0.7, w]);
+      fog(mul(WISH_TAG, 0.4 + 0.9 * tw), zc), fw);
+    GLOW.halo(cx, cy, rad * 2.6, mul(col, 0.3 * fw));
+    if (!w.ghost) WISH.spots.push([cx, cy, rad / 0.7, w]);
   }
 }
 
@@ -2103,20 +2153,21 @@ const POST_ERRORS = {
   busy: "지금 글이 몰리고 있어요. 1분 뒤에 다시 남겨주세요.",
 };
 
-function post_wish(text, name = "", ornament = "ball", color = "red") {   // → Promise<{ ok, msg }>
+function post_wish(text, name = "", ornament = "ball", color = "red", pos = null) {   // → Promise<{ ok, msg }>
   text = text.trim().replace(/\s+/g, " ").slice(0, WISH_LEN);
   name = name.trim().replace(/\s+/g, " ").slice(0, NAME_LEN);
   if (!text) return Promise.resolve({ ok: false, msg: "남길 말을 적어주세요." });
   const w = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), name, text,
     at: Date.now(), ornament: ornament in ORN_SHAPES ? ornament : "ball",
-    color: color in ORN_COLORS ? color : "red" };
+    color: color in ORN_COLORS ? color : "red", pos };
   return STORE.add(w).then(status => {
     trace("post_wish");
     if (status === "pending")
       return { ok: true, msg: "관리자가 확인한 뒤에 트리에 걸려요. 조금만 기다려 주세요." };
     WISH.list = [{ ...w, by: "guest", mine: true, status: "approved" }, ...WISH.list];
     render_board();
-    WISH.flights.push({ id: w.id, t0: S.clock, sx: L.w * (0.15 + 0.7 * Math.random()) });
+    if (pos) WISH.landed[w.id] = S.clock;          // hung right where it was placed
+    else WISH.flights.push({ id: w.id, t0: S.clock, sx: L.w * (0.15 + 0.7 * Math.random()) });
     return { ok: true, msg: "" };
   }, e => ({ ok: false, msg: POST_ERRORS[e.message] || "글을 올리지 못했어요. 잠시 후 다시 시도해 주세요." }));
 }
@@ -2357,6 +2408,7 @@ function wish_ui() {
   const say = (s, ok) => { msg.textContent = s; msg.classList.toggle("ok", !!ok); };
   try { name.value = localStorage.getItem(NAME_KEY) || ""; } catch (e) {}
   const open = () => {
+    if (PLACE.w && !PLACE.busy) { place_end(); place_bar(""); }
     sheet.hidden = false;
     say("");
     render_board();
@@ -2372,21 +2424,79 @@ function wish_ui() {
   document.getElementById("wish-cancel").onclick = close;
   sheet.addEventListener("keydown", e => { if (e.key === "Escape") close(); });
   text.oninput = () => { left.textContent = `${text.value.length}/${WISH_LEN}`; say(""); };
-  form.onsubmit = async e => {
+  form.onsubmit = e => {             // close the form, then let the writer pick a spot on the tree
     e.preventDefault();
-    if (send.disabled) return;
+    if (!text.value.trim()) return say("남길 말을 적어주세요.");
     try { localStorage.setItem(NAME_KEY, name.value.trim()); } catch (e) {}
-    send.disabled = true;
     say("");
-    const r = await post_wish(text.value, name.value, pick.ornament, pick.color);
-    send.disabled = false;
-    if (!r.ok) return say(r.msg);
-    text.value = "";
-    left.textContent = `0/${WISH_LEN}`;
-    if (r.msg) say(r.msg, true);
-    else close();
+    close();
+    place_start({ ornament: pick.ornament, color: pick.color, text: text.value, name: name.value }, async spot => {
+      const r = await post_wish(text.value, name.value, pick.ornament, pick.color, spot);
+      if (!r.ok) {
+        open();
+        say(r.msg);
+        return "";
+      }
+      text.value = "";
+      left.textContent = `0/${WISH_LEN}`;
+      return r.msg;
+    });
   };
+  document.getElementById("place-auto").onclick = () => place_finish(null);
+  document.getElementById("place-cancel").onclick = () => { place_end(); place_bar(""); open(); };
+  window.addEventListener("keydown", e => {
+    if (e.key === "Escape" && PLACE.w && !PLACE.busy) { place_end(); place_bar(""); }
+  });
   const pick = ornament_picker();
+}
+
+// ------------------------------------------------------------------ placing a note
+// After writing, the writer taps the tree where the ornament should hang. The
+// tree holds still meanwhile (it can still be dragged round), a faint copy of
+// the ornament follows the pointer, and "아무 데나 걸기" lets the tree choose.
+const PLACE = { w: null, ghost: null, commit: null, busy: false, timer: 0 };
+
+function place_bar(msg, placing) {  // the banner over the scene; a short toast when not placing
+  const bar = document.getElementById("place-bar");
+  clearTimeout(PLACE.timer);
+  document.getElementById("place-msg").textContent = msg;
+  bar.classList.toggle("toast", !placing);
+  bar.hidden = !msg;
+  if (msg && !placing) PLACE.timer = setTimeout(() => { if (!PLACE.w) bar.hidden = true; }, 4500);
+}
+
+function place_start(w, commit) {
+  PLACE.w = { ...w, id: "ghost", ghost: true };
+  PLACE.ghost = null;
+  PLACE.commit = commit;
+  PLACE.busy = false;
+  S.vel = 0;
+  hide_hint();
+  place_bar("트리에서 장식을 걸 자리를 눌러주세요", true);
+}
+
+function place_end() {
+  PLACE.w = PLACE.ghost = PLACE.commit = null;
+  PLACE.busy = false;
+  CANVAS.style.cursor = "default";
+}
+
+async function place_finish(spot) { // spot: [angle, height], or null to let the tree choose
+  if (!PLACE.w || PLACE.busy) return;
+  PLACE.busy = true;
+  PLACE.ghost = spot;
+  place_bar("장식을 거는 중…", true);
+  const msg = await PLACE.commit(spot);
+  place_end();
+  place_bar(msg || "", false);
+}
+
+function place_at(x, y) {            // a tap on the scene while placing
+  if (PLACE.busy) return;
+  const spot = tree_spot(x, y);
+  if (!spot) return place_bar("트리 위를 눌러주세요", true);
+  trace("place_at");
+  place_finish(free_spot(...spot));
 }
 
 function orn_preview(canvas, key, col) {   // a small pixel drawing of an ornament for the picker
@@ -2484,7 +2594,7 @@ function frame(now) {
   if (S.outro >= 0 && S.clock - S.outro > 0.7) { S.outro = -1; S.T = 0; S.ornaments = []; }
   if (!S.drag) {
     S.vel *= Math.exp(-dt * 1.6);
-    S.spin += (AUTO_SPIN * MOTION + S.vel) * dt;
+    S.spin += ((PLACE.w ? 0 : AUTO_SPIN * MOTION) + S.vel) * dt;   // hold still while a note is being placed
   }
   if (S.clock - S.sleigh > 40) S.sleigh = S.clock + 4;      // Santa comes round again
   if (S.T > TL.message + 2 && ED && S.clock - ED.since > 7)    // wander through the code
@@ -2750,6 +2860,11 @@ function input_setup() {
   });
   CANVAS.addEventListener("pointermove", e => {
     const [x, y] = pos(e);
+    if (!S.drag && PLACE.w) {                             // placing a note: preview it under the pointer
+      PLACE.ghost = tree_spot(x, y);
+      CANVAS.style.cursor = PLACE.ghost ? "copy" : "not-allowed";
+      return;
+    }
     if (!S.drag) {
       const [kind] = hit(x, y);
       CANVAS.style.cursor = kind === "sky" || kind === "ground" ? "default"
@@ -2784,7 +2899,9 @@ function input_setup() {
     const moved = S.drag.moved;
     S.drag = null;
     if (moved || e.type === "pointercancel") return;
-    const [x, y] = pos(e), [kind, i] = hit(x, y);
+    const [x, y] = pos(e);
+    if (PLACE.w) return place_at(x, y);
+    const [kind, i] = hit(x, y);
     hide_hint();
     if (kind === "gift") open_gift(i);
     else if (kind === "wish" || kind === "meteor") {
