@@ -1,0 +1,8 @@
+Carols: Jingle Bells (James Lord Pierpont, 1857), We Wish You a Merry Christmas
+(traditional), Deck the Halls (traditional Welsh), Joy to the World (Isaac Watts
+1719 / Lowell Mason 1839) - all in the public domain.
+
+Orchestral arrangements written for this page and rendered with FluidSynth using
+the GeneralUser GS sound bank by S. Christian Collins
+(https://github.com/mrbumpy409/GeneralUser-GS), which may be used without
+restriction for music creation, private or commercial.
